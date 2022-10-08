@@ -10,7 +10,7 @@ import gzip
 import py2Lib.bit as bit
 
 #Zones/Counties to fetch alerts for
-interestList = ['FLZ151', 'FLC057', 'FLZ149', 'FLZ249', 'FLC101']
+interestList = ['FLZ151', 'FLC057', 'FLZ149', 'FLZ249', 'FLC101']   # TODO: Grab these automatically from MachineProductCfg.xml
 
 #You can safely edit the API key here. Make sure to include the ' before and after the key
 headlineApiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
@@ -18,6 +18,7 @@ detailsApiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
 
 #Where does this script live? Put path below.
 #Sorry I'm too lazy to program this script figure it out itself.
+#TODO: Find the path automatically
 path = 'D:\\PythonScripts\\Alerts'
 
 k = 0
@@ -307,6 +308,9 @@ def getAlerts(location):
         with open(path + '\\Output\\alertmanifest.txt', "a") as c:
             c.write('\n' + location + '_' + x['phenomena'] + '_' + x['significance'] + '_' + str(x['processTimeUTC']))
             c.close()
+
+
+# TODO: This should be converted into a function so it works better with async, that way we're not getting hung up on that time.sleep() call.
 
 
 n = 0
