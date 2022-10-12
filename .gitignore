@@ -1,3 +1,5 @@
 # Python Virtual Environment
 venv/
 
+# MachineProductCfg
+./MachineProductCfg.xml
