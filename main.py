@@ -11,18 +11,22 @@ Alerts: 5 minutes
 print("i2MessageEncoder-Python\nDeveloped by mewtek\nData record generators by Floppaa & Goldblaze")
 
 async def FiveMinUpdaters():
-    CurrentObservations.makeDataFile()
-    await asyncio.sleep(300)
+    while True:
+        CurrentObservations.makeDataFile()
+        print("Sleeping for 5 minutes...")
+        await asyncio.sleep(300)
 
 
 async def HourUpdaters():
-    DailyForecast.makeDataFile()
-    HourlyForecast.makeDataFile()
-    AirQuality.writeData()
-    PollenForecast.makeDataFile()
-    AirportDelays.writeData()
-    Breathing.makeDataFile()
-    await asyncio.sleep(3600)
+    while True:
+        DailyForecast.makeDataFile()
+        HourlyForecast.makeDataFile()
+        AirQuality.writeData()
+        PollenForecast.makeDataFile()
+        AirportDelays.writeData()
+        Breathing.makeDataFile()
+        print("Sleeping for an hour...")
+        await asyncio.sleep(3600)
 
 loop = asyncio.get_event_loop()
 
