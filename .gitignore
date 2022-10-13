@@ -2,4 +2,4 @@
 venv/
 
 # MachineProductCfg
-./MachineProductCfg.xml
+MachineProductCfg.xml
