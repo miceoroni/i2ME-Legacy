@@ -32,39 +32,50 @@ def getData(epaId, zipcode):
     newData = data[57:-11]
 
     # Write to i2doc file
-    i2Doc = f'<AirQuality id="000000000" locationKey="{epaId}" isWxScan=0>' + '' + newData + f'<clientKey="{epaId}"></AirQuality>' 
+    i2Doc = f'<AirQuality id="000000000" locationKey="{epaId}" isWxScan="0">' + '' + newData + f'<clientKey>{epaId}</clientKey></AirQuality>' 
 
-    f = open("D:\\AirQuality.xml", 'a')
+    f = open("D:\\AirQuality.i2m", 'a')
     f.write(i2Doc)
     f.close()
 
 def writeData():
+    useData = False 
+    workingEpaIds = []
+
+    for i in epaIds:
+        if i == None:
+            print(f"No EPA ID found for location -- Skipping.")
+        else:
+            print(f"EPA ID found for location! Writing data for Air Quality.")
+            workingEpaIds.append(i)
+            useData = True
+
 
     # Check to see if we even have EPA ids, as some areas don't have air quality reports
-    if (epaIds != None or epaIds != ['']):
+    if (useData):
         header = '<Data type="AirQuality">'
         footer = "</Data>"
 
         with open("D:\\AirQuality.i2m", 'w') as doc:
             doc.write(header)
 
-        for (x, y) in zip(epaIds, zipCodes):
+        for (x, y) in zip(workingEpaIds, zipCodes):
             getData(x, y)
 
         with open("D:\\AirQuality.i2m", 'a') as end:
             end.write(footer)
 
         dom = xml.dom.minidom.parse("D:\\AirQuality.i2m")
-        xml = dom.toprettyxml(indent = "  ")
+        xmlPretty = dom.toprettyxml(indent = "  ")
 
         with open("D:\\AirQuality.i2m", 'w') as g:
-            g.write(xml)
+            g.write(xmlPretty[23:])
             g.close()
 
         files = []
         commands = []
         with open("D:\\AirQuality.i2m", 'rb') as f_in:
-            with gzip.open("D:\\AirQuality.xml", 'wb') as f_out:
+            with gzip.open("D:\\AirQuality.gz", 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
 
         gZipFile = "D:\\AirQuality.gz"
@@ -78,7 +89,7 @@ def writeData():
         os.remove("D:\\AirQuality.i2m")
         os.remove("D:\\AirQuality.gz")
     else:
-        print("Ignoring AirQuality data collection -- No epaIds for primary locations.")
+        print("Ignoring AirQuality data collection -- No working EPA Ids.")
 
 
     
