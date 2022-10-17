@@ -3,3 +3,6 @@ venv/
 
 # MachineProductCfg
 MachineProductCfg.xml
+
+# Ignore tiles
+tiles/*
