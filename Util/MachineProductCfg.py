@@ -35,5 +35,17 @@ def getAirportCodes():
 
     return airports
 
+def getZones():
+    """ Returns a list of zones present in the MachineProductCfg """
+    zones = []
+    for i in data['Config']['ConfigDef']['ConfigItems']['ConfigItem']:
+        if i['@key'] == "primaryZone" and i['@value'] != "":
+            zones.append(i['@value'])   # This should only be one value
 
-print(getPrimaryLocations())
+        if i['@key'] == "secondaryZones" and i['@value'] != "":
+            for x in i['@value'].split(','):
+                zones.append(x)
+
+    return zones
+
+print(getZones())
