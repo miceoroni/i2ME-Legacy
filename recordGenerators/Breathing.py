@@ -5,6 +5,7 @@ import uuid
 import os
 import shutil
 import xml.dom.minidom
+import logging,coloredlogs
 
 sys.path.append("./py2lib")
 sys.path.append("./Util")
@@ -13,6 +14,8 @@ import bit
 import MachineProductCfg as MPC
 import LFRecord as LFR
 
+l = logging.getLogger(__name__)
+coloredlogs.install()
 
 coopIds = []
 geocodes = []
@@ -38,7 +41,7 @@ def getData(coopId, geocode):
 
     newData = data[63:-26]
     
-    print('[BREATHING] Gathering data for location id ' + coopId)
+    l.debug('Gathering data for location id ' + coopId)
     #Write to .i2m file
     i2Doc = '<Breathing id="000000000" locationKey="' + str(coopId) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(coopId) + '</clientKey></Breathing>'
 
@@ -48,6 +51,7 @@ def getData(coopId, geocode):
 
 
 def makeDataFile():
+    l.info("Writing a Breathing forecast record.")
     header = '<Data type="Breathing">'
     footer = '</Data>'
 

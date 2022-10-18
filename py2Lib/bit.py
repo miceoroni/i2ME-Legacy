@@ -5,6 +5,10 @@ import struct
 import binascii
 import math
 import time
+import logging,coloredlogs
+
+l = logging.getLogger(__name__)
+coloredlogs.install()
 
 MCAST_GRP = '224.1.1.77'
 MCAST_IF = '127.0.0.1'
@@ -23,7 +27,7 @@ def sendFile(files, commands, numSgmts, Pri):
     elif Pri == 1:
         MCAST_PORT = 7788
     else:
-        print("Invalid Priority Flag. 0 = Routine Message        1 = High Priority Message\n\nScript will now terminate...")
+        l.critical("Invalid Priority Flag. 0 = Routine Message        1 = High Priority Message\n\nScript will now terminate...")
         exit()
     #Get the next message ID
     with open('C:\\Clips\\msgId.txt', "r") as f:
@@ -37,9 +41,9 @@ def sendFile(files, commands, numSgmts, Pri):
     h.close()
     segnmNum = 0
     if Pri == 0:
-        print("Sending Routine Msg-" + str(msgNum) + " on UDP " + MCAST_GRP + " " + str(MCAST_PORT) + "....")
+        l.info("Sending Routine Msg-" + str(msgNum) + " on UDP " + MCAST_GRP + " " + str(MCAST_PORT) + "....")
     elif Pri == 1:
-        print("Sending High Priority Msg-" + str(msgNum) + " on UDP " + MCAST_GRP + " " + str(MCAST_PORT) + "....")
+        l.info("Sending High Priority Msg-" + str(msgNum) + " on UDP " + MCAST_GRP + " " + str(MCAST_PORT) + "....")
     startFlag = False
 
     for x, y in zip(files, commands):
@@ -85,7 +89,7 @@ def sendFile(files, commands, numSgmts, Pri):
                     conn.sendto(packetHeader + fec + data + theNull, (MCAST_GRP, MCAST_PORT))
                 else:
                     conn.sendto(packetHeader + fec + data, (MCAST_GRP, MCAST_PORT))
-                print(packet_count)
+                l.debug(packet_count)
                 packet_count += 1
                 j += 1
             
@@ -115,7 +119,7 @@ def sendCommand(command, Pri, msgNum = None):
     elif Pri == 1:
         MCAST_PORT = 7788
     else:
-        print("Invalid Priority Flag. 0 = Routine Message        1 = High Priority Message\n\nScript will now terminate...")
+        l.critical("Invalid Priority Flag. 0 = Routine Message        1 = High Priority Message\n\nScript will now terminate...")
         exit()
     #Get the next message ID
     with open('C:\\Clips\\msgId.txt', "r") as f:
@@ -129,9 +133,9 @@ def sendCommand(command, Pri, msgNum = None):
     h.close()
     segnmNum = 0
     if Pri == 0:
-        print("Sending Routine Msg-" + str(msgNum) + " on UDP " + MCAST_GRP + " " + str(MCAST_PORT) + "....")
+        l.info("Sending Routine Msg-" + str(msgNum) + " on UDP " + MCAST_GRP + " " + str(MCAST_PORT) + "....")
     elif Pri == 1:
-        print("Sending High Priority Msg-" + str(msgNum) + " on UDP " + MCAST_GRP + " " + str(MCAST_PORT) + "....")
+        l.info("Sending High Priority Msg-" + str(msgNum) + " on UDP " + MCAST_GRP + " " + str(MCAST_PORT) + "....")
     startFlag = False
 
     for x in command:
@@ -181,7 +185,7 @@ def sendCommand(command, Pri, msgNum = None):
                     conn.sendto(packetHeader + fec + data + theNull, (MCAST_GRP, MCAST_PORT))
                 else:
                     conn.sendto(packetHeader + fec + data, (MCAST_GRP, MCAST_PORT))
-                print(packet_count)
+                l.debug(packet_count)
                 packet_count += 1
                 j += 1
             

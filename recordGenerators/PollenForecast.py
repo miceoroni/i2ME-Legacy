@@ -5,6 +5,7 @@ import uuid
 import os
 import shutil
 import xml.dom.minidom
+import logging, coloredlogs
 
 sys.path.append("./py2lib")
 sys.path.append("./Util")
@@ -13,6 +14,9 @@ import bit
 import MachineProductCfg as MPC
 import LFRecord as LFR
 
+
+l = logging.getLogger(__name__)
+coloredlogs.install()
 
 pollenIds = []
 geocodes = []
@@ -38,7 +42,7 @@ def getData(pollenId, geocode):
 
     newData = data[63:-26]
     
-    print('[POLLEN FORECAST] Gathering data for location id ' + pollenId)
+    l.debug('Gathering data for location id ' + pollenId)
     #Write to .i2m file
     i2Doc = '<PollenForecast id="000000000" locationKey="' + str(pollenId) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(pollenId) + '</clientKey></PollenForecast>'
 
@@ -48,6 +52,7 @@ def getData(pollenId, geocode):
 
 
 def makeDataFile():
+    l.info("Writing a PollenForecast record.")
     header = '<Data type="PollenForecast">'
     footer = '</Data>'
 

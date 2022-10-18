@@ -4,6 +4,7 @@ import uuid
 import os
 import shutil
 import xml.dom.minidom
+import logging,coloredlogs
 
 import sys
 sys.path.append("./py2lib")
@@ -13,6 +14,8 @@ import bit
 import MachineProductCfg as MPC
 import LFRecord as LFR
 
+l = logging.getLogger(__name__)
+coloredlogs.install()
 
 tecciId = []
 zipCodes = []
@@ -35,7 +38,7 @@ def getData(tecci, zipCode):
 
     newData = data[48:-11]
     
-    print('[HOURLY FORECAST] Gathering data for location id ' + tecci)
+    l.debug('Gathering data for location id ' + tecci)
     #Write to .i2m file
     i2Doc = '<HourlyForecast id="000000000" locationKey="' + str(tecci) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(tecci) + '</clientKey></HourlyForecast>'
 
@@ -44,6 +47,7 @@ def getData(tecci, zipCode):
     f.close()
 
 def makeDataFile():
+    l.info("Writing an HourlyForecast record.")
     header = '<Data type="HourlyForecast">'
     footer = '</Data>'
 

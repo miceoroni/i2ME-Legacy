@@ -3,6 +3,10 @@ import gzip
 import os
 import shutil
 import xml.dom.minidom
+import logging,coloredlogs
+
+l = logging.getLogger(__name__)
+coloredlogs.install()
 
 import sys
 sys.path.append("./py2lib")
@@ -44,9 +48,9 @@ def writeData():
 
     for i in epaIds:
         if i == None:
-            print(f"No EPA ID found for location -- Skipping.")
+            l.debug(f"No EPA ID found for location -- Skipping.")
         else:
-            print(f"EPA ID found for location! Writing data for Air Quality.")
+            l.debug(f"EPA ID found for location! Writing data for Air Quality.")
             workingEpaIds.append(i)
             useData = True
 
@@ -54,6 +58,7 @@ def writeData():
     # Check to see if we even have EPA ids, as some areas don't have air quality reports
     if (useData):
         try:
+            l.info("Writing an AirQuality record.")
             header = '<Data type="AirQuality">'
             footer = "</Data>"
 
@@ -90,9 +95,10 @@ def writeData():
             os.remove("D:\\AirQuality.i2m")
             os.remove("D:\\AirQuality.gz")
         except Exception as e:
-            print("AirQuality failed to write, problably was expired and was sticking around in the IBM api.")
+            l.error("DO NOT REPORT THE ERROR BELOW")
+            l.error("Failed to write an AirQuality record.")
     else:
-        print("Ignoring AirQuality data collection -- No working EPA Ids.")
+        l.info("Not writing an AirQuality record due to a lack of working EPA ids.")
 
 
     

@@ -2,6 +2,7 @@ import requests
 import json
 import os
 from datetime import datetime,timedelta
+from Util.MachineProductCfg import getZones
 import time
 import pytz
 import xml.dom.minidom
@@ -10,7 +11,7 @@ import gzip
 import py2Lib.bit as bit
 
 #Zones/Counties to fetch alerts for
-interestList = ['FLZ151', 'FLC057', 'FLZ149', 'FLZ249', 'FLC101']   # TODO: Grab these automatically from MachineProductCfg.xml
+zones = getZones()
 
 #You can safely edit the API key here. Make sure to include the ' before and after the key
 headlineApiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
@@ -312,40 +313,43 @@ def getAlerts(location):
 
 # TODO: This should be converted into a function so it works better with async, that way we're not getting hung up on that time.sleep() call.
 
-
-n = 0
-while n==0:
-    #Start our XML File
-    with open(path + '\\Output\\BERecord.xml', "w") as e:
-        e.write('<Data type="BERecord">')
-        e.close()
-    for i in interestList:
-        getAlerts(i)
-    #Close our XML File
-    with open(path + '\\Output\\BERecord.xml', "a") as d:
-        d.write('</Data>')
-        d.close()
-    dom = xml.dom.minidom.parse(path + '\\Output\\BERecord.xml')
-    pretty_xml_as_string = dom.toprettyxml(indent = "  ")
+# n = 0
+# while n==0:
+#     #Start our XML File
+#     with open(path + '\\Output\\BERecord.xml', "w") as e:
+#         e.write('<Data type="BERecord">')
+#         e.close()
+#     for i in interestList:
+#         getAlerts(i)
+#     #Close our XML File
+#     with open(path + '\\Output\\BERecord.xml', "a") as d:
+#         d.write('</Data>')
+#         d.close()
+#     dom = xml.dom.minidom.parse(path + '\\Output\\BERecord.xml')
+#     pretty_xml_as_string = dom.toprettyxml(indent = "  ")
     
-    with open(path + '\\Output\\BERecord.i2m', "w") as h:
-        h.write(pretty_xml_as_string[23:])
-        h.close()
-    if k > 0:
-        with open(path + '\\Output\\BERecord.i2m', 'rb') as f_in:
-            with gzip.open(path + '\\Output\\BERecord.gz', 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
+#     with open(path + '\\Output\\BERecord.i2m', "w") as h:
+#         h.write(pretty_xml_as_string[23:])
+#         h.close()
+#     if k > 0:
+#         with open(path + '\\Output\\BERecord.i2m', 'rb') as f_in:
+#             with gzip.open(path + '\\Output\\BERecord.gz', 'wb') as f_out:
+#                 shutil.copyfileobj(f_in, f_out)
         
-        files = []
-        commands = []
-        gZipFile = path + '\\Output\\BERecord.gz'
-        files.append(gZipFile)
-        command = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__BERecord__,Feed=BERecord)" /><GzipCompressedMsg fname="BERecord" /></MSG>')
-        bit.sendFile(files, commands, 1, 0)
-        os.remove(gZipFile)
-        k = 0
-    os.remove(path + '\\Output\\BERecord.xml')
-    #os.remove(path + '\\Output\\BERecord.i2m')
+#         files = []
+#         commands = []
+#         gZipFile = path + '\\Output\\BERecord.gz'
+#         files.append(gZipFile)
+#         command = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__BERecord__,Feed=BERecord)" /><GzipCompressedMsg fname="BERecord" /></MSG>')
+#         bit.sendFile(files, commands, 1, 0)
+#         os.remove(gZipFile)
+#         k = 0
+#     os.remove(path + '\\Output\\BERecord.xml')
+#     #os.remove(path + '\\Output\\BERecord.i2m')
     
-    print('Will sleep for 60 seconds...\n')
-    time.sleep(60)
+#     print('Will sleep for 60 seconds...\n')
+#     time.sleep(60)
+
+
+def makeBERecord():
+    pass

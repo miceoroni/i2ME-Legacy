@@ -3,6 +3,7 @@ import gzip
 import os
 import shutil
 import xml.dom.minidom
+import logging,coloredlogs
 
 import sys
 sys.path.append("./py2lib")
@@ -11,6 +12,9 @@ sys.path.append("./records")
 import bit
 import MachineProductCfg as MPC
 import LFRecord as LFR
+
+l = logging.getLogger(__name__)
+coloredlogs.install()
 
 locationIds = []
 zipCodes = []
@@ -35,7 +39,6 @@ def getData(airport):
 
     # Write to i2doc file
     i2Doc = f'<AirportDelays id="000000000" locationKey="{airport}" isWxScan="0">' + '' + newData + f'<clientKey>{airport}</clientKey></AirportDelays>' 
-    print(f"[AIRPORT DELAYS] Writing airport delay data for {airport}")
 
     f = open("D:\\AirportDelays.i2m", 'a')
     f.write(i2Doc)
@@ -50,13 +53,14 @@ def writeData():
         res = requests.get(f"https://api.weather.com/v1/airportcode/{x}/airport/delays.xml?language=en-US&apiKey={apiKey}")
 
         if (res.status_code != 200):
-            print(f"[AIRPORT DELAYS] No delays for {x} found, skipping..")
+            l.debug(f"[AIRPORT DELAYS] No delays for {x} found, skipping..")
         else:
             airportsWithDelays.append(x)
-            print(f"[AIRPORT DELAYS] {x} has a delay! Writing a file..")
+            l.debug(f"[AIRPORT DELAYS] {x} has a delay! Writing a file..")
             useData = True
 
     if (useData):
+        l.info("Writing an AirportDelays record.")
         header = '<Data type="AirportDelays">'
         footer = "</Data>"
 
@@ -93,4 +97,4 @@ def writeData():
         os.remove("D:\\AirportDelays.i2m")
         os.remove("D:\\AirportDelays.gz")
     else:
-        print("[AIRPORT DELAYS] Not writing AirportDelays -- Either no delays found, or the API is broken.")
+        l.info("No airport delays found.")

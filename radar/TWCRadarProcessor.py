@@ -7,6 +7,7 @@ import aiohttp
 import json
 import time as epochTime
 import requests
+import logging,coloredlogs
 
 from RadarProcessor import *
 from os import path, mkdir, listdir, remove, cpu_count
@@ -17,6 +18,9 @@ from wand.color import Color
 
 
 radarType = "Radar-US"
+
+l = logging.getLogger(__name__)
+coloredlogs.install()
 
 upperLeftX,upperLeftY,lowerRightX,lowerRightY = 0,0,0,0
 xStart,xEnd,yStart,yEnd = 0,0,0,0
@@ -29,7 +33,7 @@ import bit
 
 async def getValidTimestamps(boundaries:ImageBoundaries) -> list:
     """Gets all valid UNIX timestamps for the TWCRadarMosaic product """
-    print("Getting timestamps for the radar..")
+    l.info("Getting timestamps for the radar..")
     times = []
 
     async with aiohttp.ClientSession() as session:
@@ -44,12 +48,12 @@ async def getValidTimestamps(boundaries:ImageBoundaries) -> list:
                     
                     # Don't add frames that aren't at the correct interval
                     if (time % boundaries.ImageInterval != 0):
-                        print(f"Ignoring {time} -- Not at the correct frame interval.")
+                        l.debug(f"Ignoring {time} -- Not at the correct frame interval.")
                         continue
 
                     # Don't add frames that are expired
                     if (time < (datetime.utcnow().timestamp() - epochTime.time()) / 1000 - boundaries.Expiration):
-                        print(f"Ignoring {time} -- Expired.")
+                        l.debug(f"Ignoring {time} -- Expired.")
                         continue
 
                     times.append(time)
@@ -63,13 +67,13 @@ def downloadRadarTile(url, p, fn):
     
     # Make the path if it doesn't exist
     if exists(f"tiles/output/{ts}.tiff"):
-        print("Not downloading tiles for timestamp " + str(ts) + " since a frame for it already exists." )
+        l.debug("Not downloading tiles for timestamp " + str(ts) + " since a frame for it already exists." )
         download = False
     if not path.exists(p):
         mkdir(p)
-        print(f"Download {ts}")
+        l.debug(f"Download {ts}")
     if exists(f"{p}/{fn}"): 
-        print(f"Not downloading new tiles for {ts} as they already exist.")
+        l.debug(f"Not downloading new tiles for {ts} as they already exist.")
         download = False
 
     if (img.status_code == 200 and download):
@@ -77,7 +81,7 @@ def downloadRadarTile(url, p, fn):
             for data in img:
                 tile.write(data)
     elif (img.status_code != 200):
-        print("ERROR DOWNLOADING " + p + "\nSTATUS CODE " + str(img.status_code))
+        l.error("ERROR DOWNLOADING " + p + "\nSTATUS CODE " + str(img.status_code))
     elif (download == False):
         pass
 
@@ -206,6 +210,7 @@ def getTime(timestamp) -> str:
 
 async def makeRadarImages():
     """ Creates proper radar frames for the i2 """
+    l.info("Downloading frames for the Regional Radar...")
     
     combinedCoordinates = []
 
@@ -221,7 +226,7 @@ async def makeRadarImages():
     # Get rid of invalid radar frames 
     for i in listdir('tiles/output'):
         if i.split('.')[0] not in [str(x) for x in times] and i != "Thumbs.db":
-            print(f"Deleting {i} as it is no longer valid.")
+            l.debug(f"Deleting {i} as it is no longer valid.")
             remove("tiles/output/" + i)
     
     # Collect coordinates for the frame tiles
@@ -242,7 +247,7 @@ async def makeRadarImages():
                 paths.append(f"tiles/{times[i]}")
                 filenames.append(f"{times[i]}_{combinedCoordinates[c].x}_{combinedCoordinates[c].y}.png")
 
-    print(len(urls))
+    l.debug(len(urls))
     if len(urls) != 0 and len(urls) >= 6:
         with Pool(cpu_count() - 1) as p:
             p.starmap(downloadRadarTile, zip(urls, paths, filenames))
@@ -254,7 +259,7 @@ async def makeRadarImages():
             p.close()
             p.join()
     elif len(urls) == 0:
-        print("No new radar frames need to be downloaded.")
+        l.info("No new radar frames need to be downloaded.")
         return
 
     # Stitch them all together!
@@ -270,7 +275,7 @@ async def makeRadarImages():
     # Stitch the frames together
     for i in range(0, len(imgsToGenerate)):
         if not exists(F"tiles/output/{times[i]}.tiff"):
-            print(f"Generate frame for {times[i]}")
+            l.debug(f"Generate frame for {times[i]}")
             for c in combinedCoordinates:
                 path = f"tiles/{times[i]}/{times[i]}_{c.x}_{c.y}.png"
 
@@ -290,7 +295,7 @@ async def makeRadarImages():
 
     # Composite images for the i2    
     for img in framesToComposite:
-        print("Attempting to composite " + img)
+        l.debug("Attempting to composite " + img)
 
         # Crop the radar images something that the i2 will actually take
         img_raw = wandImage(filename=img)
@@ -314,6 +319,8 @@ async def makeRadarImages():
         # print(file + "\n" + command)
         
         bit.sendFile([finished[i]], [commands[i]], 1, 0)
+
+    l.info("Downloaded and sent Regional Radar frames!")
 
 
 
