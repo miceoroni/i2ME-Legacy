@@ -1,7 +1,7 @@
 import asyncio
 import logging,coloredlogs
 from recordGenerators import DailyForecast,CurrentObservations,HourlyForecast,AirQuality,AirportDelays,PollenForecast,Breathing,Alerts
-from radar import TWCRadarProcessor
+from radar import TWCRadarProcessor, RadarProcessor
 
 
 l = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ async def grabAlertsLoop():
 
 async def RadarProcessingLoop():
     while True:
-        TWCRadarProcessor.makeRadarImages()
+        await TWCRadarProcessor.makeRadarImages()
         await asyncio.sleep(30 * 60)
 
 async def FiveMinUpdaters():
@@ -47,7 +47,7 @@ async def main():
     # Create loops
     asyncio.create_task(grabAlertsLoop())
     asyncio.create_task(FiveMinUpdaters())
-    asyncio.create_task(HourUpdaters)
+    asyncio.create_task(HourUpdaters())
     asyncio.create_task(RadarProcessingLoop())
 
 if __name__ == "__main__":
