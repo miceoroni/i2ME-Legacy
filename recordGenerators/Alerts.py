@@ -318,7 +318,7 @@ def getAlerts(location):
 
 def makeRecord():
     with open("D:\\BERecord.xml", 'a') as BERecord:
-        BERecord.write('<Data type="BERecord>')
+        BERecord.write('<Data type="BERecord">')
         BERecord.close()
 
     for z in zones:
