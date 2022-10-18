@@ -12,4 +12,8 @@ This software handles data collection and processing for The Weather Channel's I
 
 *(If downloading this as a zip, extract to the directory of your choosing.)*
 
+Install the requirements in ``requirements.txt``
+
+``py -3 -m pip install -r requirements.txt``
+
 Drop your IntelliStar 2's ``MachineProductCfg.xml`` file into the root of the directory of the encoder, then run ``main.py``. 
