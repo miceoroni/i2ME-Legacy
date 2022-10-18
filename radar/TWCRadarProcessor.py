@@ -9,7 +9,6 @@ import time as epochTime
 import requests
 import logging,coloredlogs
 
-from RadarProcessor import *
 from os import path, mkdir, listdir, remove, cpu_count
 from shutil import rmtree
 from PIL import Image as PILImage
@@ -29,6 +28,8 @@ imgH = 0
 
 import sys
 sys.path.append("./py2lib")
+sys.path.append("./radar")
+from RadarProcessor import *
 import bit
 
 async def getValidTimestamps(boundaries:ImageBoundaries) -> list:
