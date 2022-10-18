@@ -293,9 +293,12 @@ async def makeRadarImages():
             # Remove the tileset as we don't need it anymore!
             rmtree(f'tiles/{times[i]}')
 
-    # Composite images for the i2    
+    # Composite images for the i2
+    imgsProcessed = 0 
     for img in framesToComposite:
+        imgsProcessed += 1
         l.debug("Attempting to composite " + img)
+        l.info(f"Processing radar frame {imgsProcessed} / 36")
 
         # Crop the radar images something that the i2 will actually take
         img_raw = wandImage(filename=img)
