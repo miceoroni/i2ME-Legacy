@@ -1,6 +1,7 @@
 import asyncio
 import logging,coloredlogs
-from recordGenerators import DailyForecast,CurrentObservations,HourlyForecast,AirQuality,AirportDelays,PollenForecast,Breathing
+from recordGenerators import DailyForecast,CurrentObservations,HourlyForecast,AirQuality,AirportDelays,PollenForecast,Breathing,Alerts
+from radar import TWCRadarProcessor
 
 
 l = logging.getLogger(__name__)
@@ -15,13 +16,21 @@ Alerts: 5 minutes
 l.info("Starting i2RecordCollector")
 l.info("Developed by mewtek32, Floppaa, and Goldblaze")
 
+async def grabAlertsLoop():
+    while True:
+        Alerts.makeRecord()
+        await asyncio.sleep(60)
+
+async def RadarProcessingLoop():
+    while True:
+        TWCRadarProcessor.makeRadarImages()
+        await asyncio.sleep(30 * 60)
 
 async def FiveMinUpdaters():
     while True:
         CurrentObservations.makeDataFile()
         l.debug("Sleeping for 5 minutes...")
-        await asyncio.sleep(300)
-
+        await asyncio.sleep(5 * 60)
 
 async def HourUpdaters():
     while True:
@@ -32,14 +41,14 @@ async def HourUpdaters():
         AirportDelays.writeData()
         Breathing.makeDataFile()
         l.debug("Sleeping for an hour...")
-        await asyncio.sleep(3600)
+        await asyncio.sleep(60 * 60)
 
-loop = asyncio.get_event_loop()
+async def main():
+    # Create loops
+    asyncio.create_task(grabAlertsLoop())
+    asyncio.create_task(FiveMinUpdaters())
+    asyncio.create_task(HourUpdaters)
+    asyncio.create_task(RadarProcessingLoop())
 
-hourtasks = loop.create_task(HourUpdaters())
-fivemintasks = loop.create_task(FiveMinUpdaters())
-
-try:
-    loop.run_until_complete(hourtasks)
-    loop.run_until_complete(fivemintasks)
-except asyncio.CancelledError: pass
+if __name__ == "__main__":
+    asyncio.run(main())
