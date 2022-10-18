@@ -53,41 +53,44 @@ def writeData():
 
     # Check to see if we even have EPA ids, as some areas don't have air quality reports
     if (useData):
-        header = '<Data type="AirQuality">'
-        footer = "</Data>"
+        try:
+            header = '<Data type="AirQuality">'
+            footer = "</Data>"
 
-        with open("D:\\AirQuality.i2m", 'w') as doc:
-            doc.write(header)
+            with open("D:\\AirQuality.i2m", 'w') as doc:
+                doc.write(header)
 
-        for (x, y) in zip(workingEpaIds, zipCodes):
-            getData(x, y)
+            for (x, y) in zip(workingEpaIds, zipCodes):
+                getData(x, y)
 
-        with open("D:\\AirQuality.i2m", 'a') as end:
-            end.write(footer)
+            with open("D:\\AirQuality.i2m", 'a') as end:
+                end.write(footer)
 
-        dom = xml.dom.minidom.parse("D:\\AirQuality.i2m")
-        xmlPretty = dom.toprettyxml(indent = "  ")
+            dom = xml.dom.minidom.parse("D:\\AirQuality.i2m")
+            xmlPretty = dom.toprettyxml(indent = "  ")
 
-        with open("D:\\AirQuality.i2m", 'w') as g:
-            g.write(xmlPretty[23:])
-            g.close()
+            with open("D:\\AirQuality.i2m", 'w') as g:
+                g.write(xmlPretty[23:])
+                g.close()
 
-        files = []
-        commands = []
-        with open("D:\\AirQuality.i2m", 'rb') as f_in:
-            with gzip.open("D:\\AirQuality.gz", 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
+            files = []
+            commands = []
+            with open("D:\\AirQuality.i2m", 'rb') as f_in:
+                with gzip.open("D:\\AirQuality.gz", 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
 
-        gZipFile = "D:\\AirQuality.gz"
+            gZipFile = "D:\\AirQuality.gz"
 
-        files.append(gZipFile)
-        comand = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__AirQuality__,Feed=AirQuality)" /><GzipCompressedMsg fname="AirQuality" /></MSG>')
-        numFiles = len(files)
+            files.append(gZipFile)
+            comand = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__AirQuality__,Feed=AirQuality)" /><GzipCompressedMsg fname="AirQuality" /></MSG>')
+            numFiles = len(files)
 
-        bit.sendFile(files, commands, numFiles, 0)
+            bit.sendFile(files, commands, numFiles, 0)
 
-        os.remove("D:\\AirQuality.i2m")
-        os.remove("D:\\AirQuality.gz")
+            os.remove("D:\\AirQuality.i2m")
+            os.remove("D:\\AirQuality.gz")
+        except Exception as e:
+            print("AirQuality failed to write, problably was expired and was sticking around in the IBM api.")
     else:
         print("Ignoring AirQuality data collection -- No working EPA Ids.")
 
