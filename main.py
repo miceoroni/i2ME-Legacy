@@ -1,7 +1,8 @@
 import asyncio
+from asyncore import loop
 import logging,coloredlogs
 from recordGenerators import DailyForecast,CurrentObservations,HourlyForecast,AirQuality,AirportDelays,PollenForecast,Breathing,Alerts
-from radar import TWCRadarProcessor, RadarProcessor
+# from radar import TWCRadarProcessor, RadarProcessor
 
 
 l = logging.getLogger(__name__)
@@ -21,10 +22,12 @@ async def grabAlertsLoop():
         Alerts.makeRecord()
         await asyncio.sleep(60)
 
-async def RadarProcessingLoop():
-    while True:
-        await TWCRadarProcessor.makeRadarImages()
-        await asyncio.sleep(30 * 60)
+
+# THIS IS BROKEN AT THE MOMENT -- COME BACK LATER.
+# async def RadarProcessingLoop():
+#     while True:
+#         await TWCRadarProcessor.makeRadarImages()
+#         await asyncio.sleep(30 * 60)
 
 async def FiveMinUpdaters():
     while True:
@@ -43,12 +46,13 @@ async def HourUpdaters():
         l.debug("Sleeping for an hour...")
         await asyncio.sleep(60 * 60)
 
-async def main():
-    # Create loops
-    asyncio.create_task(grabAlertsLoop())
-    asyncio.create_task(FiveMinUpdaters())
-    asyncio.create_task(HourUpdaters())
-    asyncio.create_task(RadarProcessingLoop())
+loop = asyncio.get_event_loop()
+alertTask = loop.create_task(grabAlertsLoop())
+CCtask = loop.create_task(FiveMinUpdaters())
+ForecastsTask = loop.create_task(HourUpdaters())
 
-if __name__ == "__main__":
-    asyncio.run(main())
+try:
+    loop.run_until_complete(alertTask)
+    loop.run_until_complete(CCtask)
+    loop.run_until_complete(ForecastsTask)
+except asyncio.CancelledError: pass
