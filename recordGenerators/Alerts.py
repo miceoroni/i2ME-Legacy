@@ -9,7 +9,11 @@ import xml.dom.minidom
 import shutil
 import gzip
 import logging,coloredlogs
-import py2Lib.bit as bit
+
+
+import sys
+sys.path.append("./py2lib")
+import bit
 
 l = logging.getLogger(__name__)
 coloredlogs.install()
