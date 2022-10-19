@@ -1,12 +1,28 @@
 import asyncio
+from asyncio.log import logger
 from asyncore import loop
 import logging,coloredlogs
 from recordGenerators import DailyForecast,CurrentObservations,HourlyForecast,AirQuality,AirportDelays,PollenForecast,Breathing,Alerts
-# from radar import TWCRadarProcessor, RadarProcessor
-
+from radar import TWCRadarProcessor, RadarProcessor
+import os
 
 l = logging.getLogger(__name__)
 coloredlogs.install(logger=l)
+
+# Create dirs and files
+if not os.path.exists('./.temp/'):
+    os.makedirs('./.temp/')
+
+if not os.path.exists('./.temp/tiles/'):
+    os.makedirs('./.temp/tiles/')
+
+if not os.path.exists('./.temp/tiles/output/'):
+    os.makedirs('./.temp/tiles/output/')
+
+if not os.path.exists('./.temp/msgId.txt'):
+    print("Creating initial msgId file")
+    with open('./.temp/msgId.txt', "w") as f:
+        f.write("410080515")
 
 
 """
@@ -15,7 +31,7 @@ Daily Forecasts, Hourlies, etc: 60 minutes
 Alerts: 5 minutes
 """
 l.info("Starting i2RecordCollector")
-l.info("Developed by mewtek32, Floppaa, and Goldblaze")
+l.info("Developed by mewtek32, Floppaa, Goldblaze, and needlenose")
 
 async def grabAlertsLoop():
     while True:
