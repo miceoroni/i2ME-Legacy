@@ -42,7 +42,7 @@ def getData(tecci, zipCode):
     #Write to .i2m file
     i2Doc = '<DailyForecast id="000000000" locationKey="' + str(tecci) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(tecci) + '</clientKey></DailyForecast>'
 
-    f = open("D:\\DailyForecast.i2m", "a")
+    f = open("./.temp/DailyForecast.i2m", "a")
     f.write(i2Doc)
     f.close()
 
@@ -52,30 +52,30 @@ def makeDataFile():
     header = '<Data type="DailyForecast">'
     footer = '</Data>'
 
-    with open("D:\\DailyForecast.i2m", 'w') as doc:
+    with open("./.temp/DailyForecast.i2m", 'w') as doc:
         doc.write(header)
 
     for x, y in zip(tecciId, zipCodes):
         getData(x, y)
         
-    with open("D:\\DailyForecast.i2m", 'a') as end:
+    with open("./.temp/DailyForecast.i2m", 'a') as end:
         end.write(footer)
 
 
-    dom = xml.dom.minidom.parse("D:\\DailyForecast.i2m")
+    dom = xml.dom.minidom.parse("./.temp/DailyForecast.i2m")
     pretty_xml_as_string = dom.toprettyxml(indent = "  ")
 
-    with open("D:\\DailyForecast.i2m", "w") as g:
+    with open("./.temp/DailyForecast.i2m", "w") as g:
         g.write(pretty_xml_as_string[23:])
         g.close()
 
     files = []
     commands = []
-    with open("D:\\DailyForecast.i2m", 'rb') as f_in:
-        with gzip.open("D:\\DailyForecast.gz", 'wb') as f_out:
+    with open("./.temp/DailyForecast.i2m", 'rb') as f_in:
+        with gzip.open("./.temp/DailyForecast.gz", 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
 
-    gZipFile = "D:\\DailyForecast.gz"
+    gZipFile = "./.temp/DailyForecast.gz"
 
     files.append(gZipFile)
     command = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__DailyForecast__,Feed=DailyForecast)" /><GzipCompressedMsg fname="DailyForecast" /></MSG>')
@@ -83,5 +83,5 @@ def makeDataFile():
 
     bit.sendFile(files, commands, numFiles, 0)
 
-    os.remove("D:\\DailyForecast.i2m")
-    os.remove("D:\\DailyForecast.gz")
+    os.remove("./.temp/DailyForecast.i2m")
+    os.remove("./.temp/DailyForecast.gz")

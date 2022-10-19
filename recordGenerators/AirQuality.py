@@ -38,7 +38,7 @@ def getData(epaId, zipcode):
     # Write to i2doc file
     i2Doc = f'<AirQuality id="000000000" locationKey="{epaId}" isWxScan="0">' + '' + newData + f'<clientKey>{epaId}</clientKey></AirQuality>' 
 
-    f = open("D:\\AirQuality.i2m", 'a')
+    f = open("./.temp/AirQuality.i2m", 'a')
     f.write(i2Doc)
     f.close()
 
@@ -62,29 +62,29 @@ def writeData():
             header = '<Data type="AirQuality">'
             footer = "</Data>"
 
-            with open("D:\\AirQuality.i2m", 'w') as doc:
+            with open("./.temp/AirQuality.i2m", 'w') as doc:
                 doc.write(header)
 
             for (x, y) in zip(workingEpaIds, zipCodes):
                 getData(x, y)
 
-            with open("D:\\AirQuality.i2m", 'a') as end:
+            with open("./.temp/AirQuality.i2m", 'a') as end:
                 end.write(footer)
 
-            dom = xml.dom.minidom.parse("D:\\AirQuality.i2m")
+            dom = xml.dom.minidom.parse("./.temp/AirQuality.i2m")
             xmlPretty = dom.toprettyxml(indent = "  ")
 
-            with open("D:\\AirQuality.i2m", 'w') as g:
+            with open("./.temp/AirQuality.i2m", 'w') as g:
                 g.write(xmlPretty[23:])
                 g.close()
 
             files = []
             commands = []
-            with open("D:\\AirQuality.i2m", 'rb') as f_in:
-                with gzip.open("D:\\AirQuality.gz", 'wb') as f_out:
+            with open("./.temp/AirQuality.i2m", 'rb') as f_in:
+                with gzip.open("./.temp/AirQuality.gz", 'wb') as f_out:
                     shutil.copyfileobj(f_in, f_out)
 
-            gZipFile = "D:\\AirQuality.gz"
+            gZipFile = "./.temp/AirQuality.gz"
 
             files.append(gZipFile)
             comand = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__AirQuality__,Feed=AirQuality)" /><GzipCompressedMsg fname="AirQuality" /></MSG>')
@@ -92,8 +92,8 @@ def writeData():
 
             bit.sendFile(files, commands, numFiles, 0)
 
-            os.remove("D:\\AirQuality.i2m")
-            os.remove("D:\\AirQuality.gz")
+            os.remove("./.temp/AirQuality.i2m")
+            os.remove("./.temp/AirQuality.gz")
         except Exception as e:
             l.error("DO NOT REPORT THE ERROR BELOW")
             l.error("Failed to write an AirQuality record.")

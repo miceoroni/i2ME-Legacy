@@ -94,12 +94,15 @@ def getAlerts(location):
             locationType = 'Z'
 
         #theIdent = str(Identifier)
-        thecheck = open('alertmanifest.txt', "r")
-        check = thecheck.read()
-        
-        if check.find(Identifier) != -1:
-            l.debug("Alert already sent...")
-            return
+        try:
+            thecheck = open('./.temp/alertmanifest.txt', "r")
+            check = thecheck.read()
+            
+            if check.find(Identifier) != -1:
+                l.debug("Alert already sent...")
+                return
+        except FileNotFoundError:
+            l.warning("alert manifest does not exist (yet)")
         k += 1 #We have an alert to send!
         
         #Lets Map Our Vocal Codes!
@@ -304,12 +307,12 @@ def getAlerts(location):
         alertMsg = '<BERecord id="0000" locationKey="' + location + '_' + x['phenomena'] + '_' + x['significance'] + '_' + x['eventTrackingNumber'] + '_' + x['officeCode'] + '" isWxscan="0"><action>NOT_USED</action><BEHdr><bPIL>' + x['productIdentifier'] + '</bPIL><bWMOHdr>NOT_USED</bWMOHdr><bEvent><eActionCd eActionPriority="' + str(x['messageTypeCode']) + '">' + Action + '</eActionCd><eOfficeId eOfficeNm="' + x['officeName'] + '">' + x['officeCode'] + '</eOfficeId><ePhenom>' + x['phenomena'] + '</ePhenom><eSgnfcnc>' + x['significance'] + '</eSgnfcnc><eETN>' + x['eventTrackingNumber'] + '</eETN><eDesc>' + x['eventDescription'] + '</eDesc><eStTmUTC>NOT_USED</eStTmUTC><eEndTmUTC>' + EndTimeUTC + '</eEndTmUTC><eSvrty>' + str(x['severityCode']) + '</eSvrty><eTWCIId>NOT_USED</eTWCIId><eExpTmUTC>' + expireTimeUTC + '</eExpTmUTC></bEvent><bLocations><bLocCd bLoc="' + x['areaName'] + '" bLocTyp="' + locationType + '">' + location + '</bLocCd><bStCd bSt="' + x['adminDistrict'] + '">' + x['adminDistrictCode'] + '</bStCd><bUTCDiff>NOT_USED</bUTCDiff><bTzAbbrv>NOT_USED</bTzAbbrv><bCntryCd>NOT_USED</bCntryCd></bLocations><bSgmtChksum>' + x['identifier'] + '</bSgmtChksum><procTm>' + processTime + '</procTm></BEHdr><BEData><bIssueTmUTC>' + issueTimeUtc + '</bIssueTmUTC><bHdln><bHdlnTxt>' + x['headlineText'] + '</bHdlnTxt>' + vocalCode + '</bHdln><bParameter>NOT_USED</bParameter><bNarrTxt bNarrTxtLang="en-US"><bLn>' + description + '</bLn></bNarrTxt><bSrchRslt>NOT_USED</bSrchRslt></BEData><clientKey>' + location + '_' + x['phenomena'] + '_' + x['significance'] + '_' + x['eventTrackingNumber'] + '_' + x['officeCode'] + '</clientKey></BERecord>'
        
         #Append BERecord
-        with open('D:\\BERecord.xml', "a") as b:
+        with open('./.temp/BERecord.xml', "a") as b:
             b.write(alertMsg)
             b.close()
         
         #Add our alert to the manifest so we don't keep sending in the same alert every 60 seconds unless an update is issued.
-        with open('alertmanifest.txt', "a") as c:
+        with open('./.temp/alertmanifest.txt', "a") as c:
             c.write('\n' + location + '_' + x['phenomena'] + '_' + x['significance'] + '_' + str(x['processTimeUTC']))
             c.close()
 
@@ -317,39 +320,41 @@ def getAlerts(location):
 # TODO: This should be converted into a function so it works better with async, that way we're not getting hung up on that time.sleep() call.
 
 def makeRecord():
-    with open("D:\\BERecord.xml", 'a') as BERecord:
+    global k
+    with open("./.temp/BERecord.xml", 'a') as BERecord:
         BERecord.write('<Data type="BERecord">')
         BERecord.close()
 
     for z in zones:
         getAlerts(z)
     
-    with open('D:\\BERecord.xml', 'a') as BERecord:
+    with open('./.temp/BERecord.xml', 'a') as BERecord:
         BERecord.write("</Data>")
         BERecord.close()
 
-    dom = xml.dom.minidom.parse("D:\\BERecord.xml")
+    dom = xml.dom.minidom.parse("./.temp/BERecord.xml")
     pretty_xml_as_string = dom.toprettyxml(indent = "    ")
 
-    with open("D:\\BERecord.i2m", 'w') as h:
+    with open("./.temp/BERecord.i2m", 'w') as h:
         h.write(pretty_xml_as_string[23:])
         h.close()
 
     # If we don't need to send the i2 an alert, we don't need to gzip it.
     if k > 0:
         l.info("Sending alert(s) to the IntelliStar 2!")
-        with open("D:\\BERecord.i2m", 'rb') as f_in:
-            with gzip.open("D:\\BERecord.gz", 'wb') as f_out:
+        with open("./.temp/BERecord.i2m", 'rb') as f_in:
+            with gzip.open("./.temp/BERecord.gz", 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
     
         files = []
         commands = []
-        gZipFile = "D:\\BERecord.gz"
+        gZipFile = "./.temp/BERecord.gz"
         files.append(gZipFile)
         command = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__BERecord__,Feed=BERecord)" /><GzipCompressedMsg fname="BERecord" /></MSG>')
         bit.sendFile(files, commands, 1, 0)
         os.remove(gZipFile)
         k = 0
     
-    os.remove("D:\\BERecord.xml")
+    os.remove("./.temp/BERecord.xml")
+    os.remove("./.temp/BERecord.i2m")
     

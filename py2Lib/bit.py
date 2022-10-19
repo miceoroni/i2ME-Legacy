@@ -30,13 +30,13 @@ def sendFile(files, commands, numSgmts, Pri):
         l.critical("Invalid Priority Flag. 0 = Routine Message        1 = High Priority Message\n\nScript will now terminate...")
         exit()
     #Get the next message ID
-    with open('C:\\Clips\\msgId.txt', "r") as f:
+    with open('./.temp/msgId.txt', "r") as f:
         oMsgId = f.read()
         msgNum = int(oMsgId)
         f.close()
     
     nMsgNum = msgNum + 1    
-    h = open('C:\\Clips\\msgId.txt', "w")
+    h = open('./.temp/msgId.txt', "w")
     h.write(str(nMsgNum))
     h.close()
     segnmNum = 0
@@ -122,13 +122,13 @@ def sendCommand(command, Pri, msgNum = None):
         l.critical("Invalid Priority Flag. 0 = Routine Message        1 = High Priority Message\n\nScript will now terminate...")
         exit()
     #Get the next message ID
-    with open('C:\\Clips\\msgId.txt', "r") as f:
+    with open('./.temp/msgId.txt', "r") as f:
         oMsgId = f.read()
         msgNum = int(oMsgId)
         f.close()
     
     nMsgNum = msgNum + 1    
-    h = open('C:\\Clips\\msgId.txt', "w")
+    h = open('./.temp/msgId.txt', "w")
     h.write(str(nMsgNum))
     h.close()
     segnmNum = 0
@@ -140,15 +140,15 @@ def sendCommand(command, Pri, msgNum = None):
 
     for x in command:
         bx = bytes(x, 'utf-8')
-        with open('D:\\command', 'wb') as c:
+        with open('./.temp/command', 'wb') as c:
             c.write(bx)
             c.close()
-        size = os.path.getsize('D:\\command')
+        size = os.path.getsize('./.temp/command')
         encode1 = bytes('I2MSG', 'UTF-8')
         commandLength = size
         encode2 = commandLength.to_bytes(4, byteorder='little')
         theCommand = b"".join([encode1, encode2])
-        with open('D:\\command', 'ab') as d:
+        with open('./.temp/command', 'ab') as d:
             d.write(theCommand)
             d.close()
         check = size - BUF_SIZE
@@ -162,14 +162,14 @@ def sendCommand(command, Pri, msgNum = None):
         pc = packet_count.to_bytes(4, byteorder='little')
         i = 0
         char = ''
-        new_size = os.path.getsize('D:\\command')
+        new_size = os.path.getsize('./.temp/command')
 
         if startFlag == False:
             #Our 34 byte beginning packet
             p1 = struct.pack(">BHHHIIBBBBBBBIBIBBB", 18, 1, 0 , 16, msgNum, 0, segnmNum, 0, 0, 8, numSegments, 3, 0, 0, 8, packRounded, 0, 0, 0)
             conn.sendto(p1, (MCAST_GRP, MCAST_PORT))
             startFlag = True
-        with open('D:\\Command',"rb") as message:
+        with open('./.temp/Command',"rb") as message:
             message.seek(0)
             data = message.read(BUF_SIZE)
             while data:
@@ -212,16 +212,16 @@ def sendCommand(command, Pri, msgNum = None):
 
 
 #Send Current Observations
-#sendFile("C:\\Clips\\CurrentObservations.i2m.gz", '<MSG><Exec workRequest="storeData(File={0},QGROUP=__CurrentObservations__,Feed=CurrentObservations)" /><GzipCompressedMsg fname="CurrentObservations.i2m" /></MSG>I2MSG', 0)
+#sendFile("./.temp/CurrentObservations.i2m.gz", '<MSG><Exec workRequest="storeData(File={0},QGROUP=__CurrentObservations__,Feed=CurrentObservations)" /><GzipCompressedMsg fname="CurrentObservations.i2m" /></MSG>I2MSG', 0)
 #time.sleep(10)
 #Send Hourly Forecast
-#sendFile("C:\\Clips\\HourlyForecast.i2m.gz", '<MSG><Exec workRequest="storeData(File={0},QGROUP=__HourlyForecast__,Feed=HourlyForecast)" /><GzipCompressedMsg fname="HourlyForecast.i2m" /></MSG>I2MSG', 0)
+#sendFile("./.temp/HourlyForecast.i2m.gz", '<MSG><Exec workRequest="storeData(File={0},QGROUP=__HourlyForecast__,Feed=HourlyForecast)" /><GzipCompressedMsg fname="HourlyForecast.i2m" /></MSG>I2MSG', 0)
 #time.sleep(10)
 #Send Daily Forecast
-#sendFile("C:\\Clips\\DailyForecast.i2m.gz", '<MSG><Exec workRequest="storeData(File={0},QGROUP=__DailyForecast__,Feed=DailyForecast)" /><GzipCompressedMsg fname="DailyForecast.i2m" /></MSG>I2MSG', 0)
+#sendFile("./.temp/DailyForecast.i2m.gz", '<MSG><Exec workRequest="storeData(File={0},QGROUP=__DailyForecast__,Feed=DailyForecast)" /><GzipCompressedMsg fname="DailyForecast.i2m" /></MSG>I2MSG', 0)
 
 #Send radar image
-#sendFile("C:\\Clips\\radar.i2m", '<MSG><Exec workRequest="storePriorityImage(File={0},FileExtension=.tiff,IssueTime=08/28/2022 03:00:00,Location=US,ImageType=Radar)" /></MSG>I2MSG', 0)
+#sendFile("./.temp/radar.i2m", '<MSG><Exec workRequest="storePriorityImage(File={0},FileExtension=.tiff,IssueTime=08/28/2022 03:00:00,Location=US,ImageType=Radar)" /></MSG>I2MSG', 0)
 
 #Load Local On The 8s
 #sendCommand('<MSG><Exec workRequest="loadPres(File={0},VideoBehind=000,Logo=domesticAds/tag3352,Flavor=domestic/V,Duration=1950,PresentationId=3E396FFF95A00067)" /></MSG>I2MSG', 1)
@@ -249,16 +249,16 @@ def sendCommand(command, Pri, msgNum = None):
 #sendCommand('<MSG><Exec workRequest="restartI2Service(File={0},CommandId=0000)" /><CheckHeadendId><HeadendId>040500</HeadendId></CheckHeadendId></MSG>I2MSG', 1)
 
 #Set ANF Mode
-#sendFile("C:\\Clips\\ANFOn.i2m",'<MSG><Exec workRequest="setANFDisplay(File={0},CommandId=0000)" /><CheckHeadendId><HeadendId>040500</HeadendId><HeadendId>040449</HeadendId><HeadendId>030025</HeadendId></CheckHeadendId></MSG>I2MSG', 1)
+#sendFile("./.temp/ANFOn.i2m",'<MSG><Exec workRequest="setANFDisplay(File={0},CommandId=0000)" /><CheckHeadendId><HeadendId>040500</HeadendId><HeadendId>040449</HeadendId><HeadendId>030025</HeadendId></CheckHeadendId></MSG>I2MSG', 1)
 
 #SendBundle
-#sendFile("C:\\Clips\\Bundles.zip",'<MSG><Exec workRequest="stageStarBundle(File={0})" /></MSG>I2MSG', 0)
+#sendFile("./.temp/Bundles.zip",'<MSG><Exec workRequest="stageStarBundle(File={0})" /></MSG>I2MSG', 0)
 
 #Send Upgrade
-#sendFile("C:\\Clips\\Upgrades\\maintenance_1.0.0.50.zip",'<MSG><Exec workRequest="storeUpgrade(File={0},ReleaseName=maintenance_1.0.0.50)" /></MSG>I2MSG', 0)
+#sendFile("./.temp/Upgrades/maintenance_1.0.0.50.zip",'<MSG><Exec workRequest="storeUpgrade(File={0},ReleaseName=maintenance_1.0.0.50)" /></MSG>I2MSG', 0)
 
 #Stage Upgrade
 #sendCommand('<MSG><Exec workRequest="stageUpgrade(File={0},InstallImmediately=False,ReleaseName=maintenance_1.0.0.50)" /></MSG>I2MSG', 0)
 
 #Change Passwords
-#sendFile("C:\\Clips\\passwords.i2m",'<MSG><Exec workRequest="changePassword(File={0},CommandId=0000)" /></MSG>I2MSG', 0)
+#sendFile("./.temp/passwords.i2m",'<MSG><Exec workRequest="changePassword(File={0},CommandId=0000)" /></MSG>I2MSG', 0)

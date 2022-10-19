@@ -129,7 +129,7 @@ def sendStarBundle(File):
         count = file_number - 1
         part = 1
 
-        with open('C:\\Clips\\msgId.txt', "r") as f:
+        with open('./.temp/msgId.txt', "r") as f:
             oMsgId = f.read()
             Id = int(oMsgId)
             f.close()
@@ -186,7 +186,7 @@ def sendUpgrade(File, RelName):
         count = file_number - 1
         part = 1
 
-        with open('C:\\Clips\\msgId.txt', "r") as f:
+        with open('./.temp/msgId.txt', "r") as f:
             oMsgId = f.read()
             Id = int(oMsgId)
             f.close()
@@ -213,7 +213,7 @@ def sendUpgrade(File, RelName):
 
 def makeStarBundle(Directory, Type, flag, Version, date, sendAfter):
     header = '<StarBundle>\n  <Version>' + Version + '</Version>\n  <ApplyDate>' + date + '</ApplyDate>\n  <Type>' + Type + '</Type>\n  <FileActions>\n'
-    with open('D:\\i2State\\SD\\ChangesetBundle\\MetaData\\manifest.xml', 'w') as ma:
+    with open('./.temp/i2State\\SD\\ChangesetBundle\\MetaData\\manifest.xml', 'w') as ma:
         ma.write(header)
         ma.close()
     
@@ -222,7 +222,7 @@ def makeStarBundle(Directory, Type, flag, Version, date, sendAfter):
             rootDir = root[24:]
             bDest = os.path.join(rootDir,name)
             fDest = os.path.join(root,name)
-            shutil.copy(fDest, 'D:\\i2State\\SD\\ChangesetBundle')
+            shutil.copy(fDest, './.temp/i2State\\SD\\ChangesetBundle')
         for name in files:
             if flag == 'Domestic_Universe':
                 flag = 'flags="Domestic_Universe"'
@@ -230,11 +230,11 @@ def makeStarBundle(Directory, Type, flag, Version, date, sendAfter):
                 flag = 'flags="Domestic_SD_Universe"'
             else:
                 pass
-            with open('D:\\i2State\\SD\\ChangesetBundle\\MetaData\\manifest.xml', 'a') as mb:
+            with open('./.temp/i2State\\SD\\ChangesetBundle\\MetaData\\manifest.xml', 'a') as mb:
                 mb.write('    <Add src="' + name + '" dest="' + bDest + '" ' + flag + ' />\n')
                 mb.close()
     closer = '  </FileActions>\n</StarBundle>'
-    with open('D:\\i2State\\SD\\ChangesetBundle\\MetaData\\manifest.xml', 'a') as ma:
+    with open('./.temp/i2State\\SD\\ChangesetBundle\\MetaData\\manifest.xml', 'a') as ma:
         ma.write(closer)
         ma.close()
 
@@ -249,22 +249,22 @@ def makeStarBundle(Directory, Type, flag, Version, date, sendAfter):
 
 #loadRunPres(['038488'], 'domestic/ldlE', '', '72000', 'LDL1')
 
-#changePasswords('C:\\Clips\\passwords2.gz', ['006833'])
+#changePasswords('./.temp/passwords2.gz', ['006833'])
 
-#sendMaintCommand('C:\\Clips\\maint\\temp\\passwords',['040500'])
+#sendMaintCommand('./.temp/maint\\temp\\passwords',['040500'])
 
-#sendStarBundle("C:\\Clips\\Bundle.zip")
+#sendStarBundle("./.temp/Bundle.zip")
 
-#sendUpgrade("C:\\Clips\\Upgrades\\wireshark_1.4.6.0.zip", "wireshark_1.4.6.0")
+#sendUpgrade("./.temp/Upgrades\\wireshark_1.4.6.0.zip", "wireshark_1.4.6.0")
 
 #For splitting
-#sendUpgrade("C:\\Clips\\ChangesetHD.zip", "PipelineMaint_6.15.1.5714")
+#sendUpgrade("./.temp/ChangesetHD.zip", "PipelineMaint_6.15.1.5714")
 
 #For no split upgrades
-#bit.sendFile('C:\\Clips\\Upgrades\\vizRequiredFilesForI2_1.2.0.0.zip', '<MSG><Exec workRequest="storeUpgrade(File={0},ReleaseName=vlc_1.1.12.0)" /><CheckHeadendId><HeadendId>040500</HeadendId></CheckHeadendId></MSG>I2MSG', 0)
+#bit.sendFile('./.temp/Upgrades\\vizRequiredFilesForI2_1.2.0.0.zip', '<MSG><Exec workRequest="storeUpgrade(File={0},ReleaseName=vlc_1.1.12.0)" /><CheckHeadendId><HeadendId>040500</HeadendId></CheckHeadendId></MSG>I2MSG', 0)
 
 #For split upgrades
-#bit.sendFile('C:\\Clips\\split\\ChangesetHD_04', '<MSG><SplitMsg id="410059811" part="4" count="69" /></MSG>I2MSG', 0)
+#bit.sendFile('./.temp/split\\ChangesetHD_04', '<MSG><SplitMsg id="410059811" part="4" count="69" /></MSG>I2MSG', 0)
 
 #Command for split upgrades
 
@@ -274,7 +274,7 @@ def makeStarBundle(Directory, Type, flag, Version, date, sendAfter):
 #commands.append(command)
 #bit.sendCommand(commands, 1, 0)
 
-#bit.sendFile(['C:\\Clips\\Alert.gz'], ['<MSG><Exec workRequest="storePriorityData(File={0},QGROUP=__BEUrgent__,Feed=BEUrgent)" /><GzipCompressedMsg fname="Alert.i2m" /></MSG>'], 1, 0)
+#bit.sendFile(['./.temp/Alert.gz'], ['<MSG><Exec workRequest="storePriorityData(File={0},QGROUP=__BEUrgent__,Feed=BEUrgent)" /><GzipCompressedMsg fname="Alert.i2m" /></MSG>'], 1, 0)
 '''
 bit.sendCommand(['<MSG><Exec workRequest="stageUpgrade(File={0},InstallImmediately=False,ReleaseName=7zip_9.20.0.0)" /></MSG>'], 0)
 bit.sendCommand(['<MSG><Exec workRequest="stageUpgrade(File={0},InstallImmediately=False,ReleaseName=agentRansack_2010.03.29.47911)" /></MSG>'], 0)
@@ -292,7 +292,7 @@ bit.sendCommand(['<MSG><Exec workRequest="stageUpgrade(File={0},InstallImmediate
 bit.sendCommand(['<MSG><Exec workRequest="stageUpgrade(File={0},InstallImmediately=False,ReleaseName=wireshark_1.4.6.0)" /></MSG>'], 0)
 '''
 #bit.sendCommand(['<MSG><Exec workRequest="cancelPres(File={0},PresentationId=LDL,StartTime=09/17/2022 02:32:40:00)" /><CheckHeadendId><HeadendId>006833</HeadendId></CheckHeadendId></MSG>'], 1)
-#bit.sendCommand('C:\\Clips\\Upgrades\\split\\PipelineMaint_6.15.1.5714_03', '<MSG><Exec workRequest="storeUpgrade(File=C:/Program Files/TWC/i2/Volatile/MsgIngester-7787/410059604,ReleaseName=PipelineMaint_6.15.1.5714)" /></MSG>I2MSG', 0)
+#bit.sendCommand('./.temp/Upgrades\\split\\PipelineMaint_6.15.1.5714_03', '<MSG><Exec workRequest="storeUpgrade(File=C:/Program Files/TWC/i2/Volatile/MsgIngester-7787/410059604,ReleaseName=PipelineMaint_6.15.1.5714)" /></MSG>I2MSG', 0)
 
 
 
@@ -305,5 +305,5 @@ bit.sendCommand(['<MSG><Exec workRequest="stageUpgrade(File={0},InstallImmediate
 
 #bit.sendCommand(['<MSG><Exec workRequest="runPres(File={0},PresentationId=ldl,StartTime=09/17/2022 17:03:35:00)" /></MSG>'], 1)
 
-#makeStarBundle('D:\\i2State\\SD\\Changeset\\audio\\domesticSD\\vocalLocal\\Cantore', 'Changeset', 'Domestic_SD_Universe', '63702614401035937', '09/19/2022', 0)
+#makeStarBundle('./.temp/i2State\\SD\\Changeset\\audio\\domesticSD\\vocalLocal\\Cantore', 'Changeset', 'Domestic_SD_Universe', '63702614401035937', '09/19/2022', 0)
 

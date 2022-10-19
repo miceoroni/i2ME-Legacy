@@ -42,7 +42,7 @@ def getData(tecci, zipCode):
     #Write to .i2m file
     i2Doc = '<HourlyForecast id="000000000" locationKey="' + str(tecci) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(tecci) + '</clientKey></HourlyForecast>'
 
-    f = open("D:\\HourlyForecast.i2m", "a")
+    f = open("./.temp/HourlyForecast.i2m", "a")
     f.write(i2Doc)
     f.close()
 
@@ -51,30 +51,30 @@ def makeDataFile():
     header = '<Data type="HourlyForecast">'
     footer = '</Data>'
 
-    with open("D:\\HourlyForecast.i2m", 'w') as doc:
+    with open("./.temp/HourlyForecast.i2m", 'w') as doc:
         doc.write(header)
 
     for x, y in zip(tecciId, zipCodes):
         getData(x, y)
         
-    with open("D:\\HourlyForecast.i2m", 'a') as end:
+    with open("./.temp/HourlyForecast.i2m", 'a') as end:
         end.write(footer)
 
 
-    dom = xml.dom.minidom.parse("D:\\HourlyForecast.i2m")
+    dom = xml.dom.minidom.parse("./.temp/HourlyForecast.i2m")
     pretty_xml_as_string = dom.toprettyxml(indent = "  ")
 
-    with open("D:\\HourlyForecast.i2m", "w") as g:
+    with open("./.temp/HourlyForecast.i2m", "w") as g:
         g.write(pretty_xml_as_string[23:])
         g.close()
 
     files = []
     commands = []
-    with open("D:\\HourlyForecast.i2m", 'rb') as f_in:
-        with gzip.open("D:\\HourlyForecast.gz", 'wb') as f_out:
+    with open("./.temp/HourlyForecast.i2m", 'rb') as f_in:
+        with gzip.open("./.temp/HourlyForecast.gz", 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
 
-    gZipFile = "D:\\HourlyForecast.gz"
+    gZipFile = "./.temp/HourlyForecast.gz"
 
     files.append(gZipFile)
     command = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__HourlyForecast__,Feed=HourlyForecast)" /><GzipCompressedMsg fname="HourlyForecast" /></MSG>')
@@ -82,5 +82,5 @@ def makeDataFile():
 
     bit.sendFile(files, commands, numFiles, 0)
 
-    os.remove("D:\\HourlyForecast.i2m")
-    os.remove("D:\\HourlyForecast.gz")
+    os.remove("./.temp/HourlyForecast.i2m")
+    os.remove("./.temp/HourlyForecast.gz")

@@ -45,7 +45,7 @@ def getData(coopId, geocode):
     #Write to .i2m file
     i2Doc = '<Breathing id="000000000" locationKey="' + str(coopId) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(coopId) + '</clientKey></Breathing>'
 
-    f = open("D:\\Breathing.i2m", "a")
+    f = open("./.temp/Breathing.i2m", "a")
     f.write(i2Doc)
     f.close()
 
@@ -55,30 +55,30 @@ def makeDataFile():
     header = '<Data type="Breathing">'
     footer = '</Data>'
 
-    with open("D:\\Breathing.i2m", 'w') as doc:
+    with open("./.temp/Breathing.i2m", 'w') as doc:
         doc.write(header)
 
     for x, y in zip(coopIds, geocodes):
         getData(x, y)
         
-    with open("D:\\Breathing.i2m", 'a') as end:
+    with open("./.temp/Breathing.i2m", 'a') as end:
         end.write(footer)
 
 
-    dom = xml.dom.minidom.parse("D:\\Breathing.i2m")
+    dom = xml.dom.minidom.parse("./.temp/Breathing.i2m")
     pretty_xml_as_string = dom.toprettyxml(indent = "  ")
 
-    with open("D:\\Breathing.i2m", "w") as g:
+    with open("./.temp/Breathing.i2m", "w") as g:
         g.write(pretty_xml_as_string[23:])
         g.close()
 
     files = []
     commands = []
-    with open("D:\\Breathing.i2m", 'rb') as f_in:
-        with gzip.open("D:\\Breathing.gz", 'wb') as f_out:
+    with open("./.temp/Breathing.i2m", 'rb') as f_in:
+        with gzip.open("./.temp/Breathing.gz", 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
 
-    gZipFile = "D:\\Breathing.gz"
+    gZipFile = "./.temp/Breathing.gz"
 
     files.append(gZipFile)
     command = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__Breathing__,Feed=Breathing)" /><GzipCompressedMsg fname="Breathing" /></MSG>')
@@ -86,5 +86,5 @@ def makeDataFile():
 
     bit.sendFile(files, commands, numFiles, 0)
 
-    os.remove("D:\\Breathing.i2m")
-    os.remove("D:\\Breathing.gz")
+    os.remove("./.temp/Breathing.i2m")
+    os.remove("./.temp/Breathing.gz")
