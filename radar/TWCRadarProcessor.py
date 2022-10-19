@@ -67,7 +67,7 @@ def downloadRadarTile(url, p, fn):
     download = True
     
     # Make the path if it doesn't exist
-    if exists(f"tiles/output/{ts}.tiff"):
+    if exists(f"./.temp/tiles/output/{ts}.tiff"):
         l.debug("Not downloading tiles for timestamp " + str(ts) + " since a frame for it already exists." )
         download = False
     if not path.exists(p):
@@ -225,10 +225,10 @@ async def makeRadarImages():
     times = await getValidTimestamps(boundaries)
 
     # Get rid of invalid radar frames 
-    for i in listdir('tiles/output'):
+    for i in listdir('./.temp/tiles/output'):
         if i.split('.')[0] not in [str(x) for x in times] and i != "Thumbs.db":
             l.debug(f"Deleting {i} as it is no longer valid.")
-            remove("tiles/output/" + i)
+            remove("./.temp/tiles/output/" + i)
     
     # Collect coordinates for the frame tiles
     for y in range(yStart, yEnd):
@@ -243,9 +243,9 @@ async def makeRadarImages():
     filenames = []
     for i in range(0, len(times)):
         for c in range(0, len(combinedCoordinates)):
-            if not exists(f'tiles/output/{times[i]}.tiff'):
+            if not exists(f'./.temp/tiles/output/{times[i]}.tiff'):
                 urls.append(f"https://api.weather.com/v3/TileServer/tile?product=twcRadarMosaic&ts={str(times[i])}&xyz={combinedCoordinates[c].x}:{combinedCoordinates[c].y}:6&apiKey=21d8a80b3d6b444998a80b3d6b1449d3")
-                paths.append(f"tiles/{times[i]}")
+                paths.append(f"./.temp/tiles/{times[i]}")
                 filenames.append(f"{times[i]}_{combinedCoordinates[c].x}_{combinedCoordinates[c].y}.png")
 
     l.debug(len(urls))
@@ -275,10 +275,10 @@ async def makeRadarImages():
 
     # Stitch the frames together
     for i in range(0, len(imgsToGenerate)):
-        if not exists(F"tiles/output/{times[i]}.tiff"):
+        if not exists(F"./.temp/tiles/output/{times[i]}.tiff"):
             l.debug(f"Generate frame for {times[i]}")
             for c in combinedCoordinates:
-                path = f"tiles/{times[i]}/{times[i]}_{c.x}_{c.y}.png"
+                path = f"./.temp/tiles/{times[i]}/{times[i]}_{c.x}_{c.y}.png"
 
                 xPlacement = (c.x - xStart) * 256
                 yPlacement = (c.y - yStart) * 256
@@ -288,11 +288,11 @@ async def makeRadarImages():
                 imgsToGenerate[i].paste(placeTile, (xPlacement, yPlacement))
             
             # Don't render it with an alpha channel
-            imgsToGenerate[i].save(f"tiles/output/{times[i]}.tiff", compression = 'tiff_lzw')
-            framesToComposite.append(f"tiles/output/{times[i]}.tiff") # Store the path so we can composite it using WAND and PIL
+            imgsToGenerate[i].save(f"./.temp/tiles/output/{times[i]}.tiff", compression = 'tiff_lzw')
+            framesToComposite.append(f"./.temp/tiles/output/{times[i]}.tiff") # Store the path so we can composite it using WAND and PIL
 
             # Remove the tileset as we don't need it anymore!
-            rmtree(f'tiles/{times[i]}')
+            rmtree(f'./.temp/tiles/{times[i]}')
 
     # Composite images for the i2
     imgsProcessed = 0 
