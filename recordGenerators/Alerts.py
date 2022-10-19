@@ -94,12 +94,15 @@ def getAlerts(location):
             locationType = 'Z'
 
         #theIdent = str(Identifier)
-        thecheck = open('alertmanifest.txt', "r")
-        check = thecheck.read()
-        
-        if check.find(Identifier) != -1:
-            l.debug("Alert already sent...")
-            return
+        try:
+            thecheck = open('./.temp/alertmanifest.txt', "r")
+            check = thecheck.read()
+            
+            if check.find(Identifier) != -1:
+                l.debug("Alert already sent...")
+                return
+        except FileNotFoundError:
+            l.warning("alert manifest does not exist (yet)")
         k += 1 #We have an alert to send!
         
         #Lets Map Our Vocal Codes!
@@ -309,7 +312,7 @@ def getAlerts(location):
             b.close()
         
         #Add our alert to the manifest so we don't keep sending in the same alert every 60 seconds unless an update is issued.
-        with open('alertmanifest.txt', "a") as c:
+        with open('./.temp/alertmanifest.txt', "a") as c:
             c.write('\n' + location + '_' + x['phenomena'] + '_' + x['significance'] + '_' + str(x['processTimeUTC']))
             c.close()
 
