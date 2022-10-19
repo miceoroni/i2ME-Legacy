@@ -1,13 +1,18 @@
 import json
+import sys
 import xmltodict
 
 
 # Open the MachineProductCfg.xml file in the root directory
-with open("MachineProductCfg.xml", mode = 'r', encoding= 'utf-8') as MPCxml:
-    MPCdict = xmltodict.parse(MPCxml.read())
-    MPCdump = json.dumps(MPCdict)
-    data = json.loads(MPCdump)
-
+try:
+    with open("MachineProductCfg.xml", mode = 'r', encoding= 'utf-8') as MPCxml:
+        MPCdict = xmltodict.parse(MPCxml.read())
+        MPCdump = json.dumps(MPCdict)
+        data = json.loads(MPCdump)
+except Exception as e:
+    print(e)
+    sys.exit("There was an error opening your MachineProductCfg.xml. Is the file in the root folder?")
+    
 
 def getPrimaryLocations():
     """ Returns all of the primary locations in the MachineProductCfg """
