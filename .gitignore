@@ -9,3 +9,5 @@ tiles/*
 
 # Python compiled files
 __pycache__/
+
+.temp/

@@ -45,7 +45,7 @@ def getData(tecci, zipCode):
     i2Doc = '<CurrentObservations id="000000000" locationKey="' + str(tecci) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(tecci) + '</clientKey></CurrentObservations>'
 
 
-    f = open("D:\\CurrentObservations.i2m", "a")
+    f = open("./.temp/CurrentObservations.i2m", "a")
     f.write(i2Doc)
     f.close()
 
@@ -54,30 +54,30 @@ def makeDataFile():
     header = '<Data type="CurrentObservations">'
     footer = '</Data>'
 
-    with open("D:\\CurrentObservations.i2m", 'w') as doc:
+    with open("./.temp/CurrentObservations.i2m", 'w') as doc:
         doc.write(header)
 
     for x, y in zip(tecciId, zipCodes):
         getData(x, y)
         
-    with open("D:\\CurrentObservations.i2m", 'a') as end:
+    with open("./.temp/CurrentObservations.i2m", 'a') as end:
         end.write(footer)
 
-    dom = xml.dom.minidom.parse("D:\\CurrentObservations.i2m")
+    dom = xml.dom.minidom.parse("./.temp/CurrentObservations.i2m")
     pretty_xml_as_string = dom.toprettyxml(indent = "  ")
 
-    with open("D:\\CurrentObservations.i2m", "w") as g:
+    with open("./.temp/CurrentObservations.i2m", "w") as g:
         g.write(pretty_xml_as_string[23:])
         g.close()
 
     files = []
     commands = []
 
-    with open("D:\\CurrentObservations.i2m", 'rb') as f_in:
-        with gzip.open("D:\\CurrentObservations.gz", 'wb') as f_out:
+    with open("./.temp/CurrentObservations.i2m", 'rb') as f_in:
+        with gzip.open("./.temp/CurrentObservations.gz", 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
 
-    gZipFile = "D:\\CurrentObservations.gz"
+    gZipFile = "./.temp/CurrentObservations.gz"
 
     files.append(gZipFile)
     command = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__CurrentObservations__,Feed=CurrentObservations)" /><GzipCompressedMsg fname="CurrentObservations" /></MSG>')
@@ -85,5 +85,5 @@ def makeDataFile():
 
     bit.sendFile(files, commands, numFiles, 0)
 
-    os.remove("D:\\CurrentObservations.i2m")
-    os.remove("D:\\CurrentObservations.gz")
+    os.remove("./.temp/CurrentObservations.i2m")
+    os.remove("./.temp/CurrentObservations.gz")

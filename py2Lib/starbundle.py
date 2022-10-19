@@ -42,4 +42,4 @@ def makeStarBundle(Directory, Type, flag, Version, date, sendAfter):
 
 
                  #Directory which contains Files to be bundled                        Type                Flags                 Version           Date       SendImmediately(Does not apply to this script)
-makeStarBundle('D:\\i2State\\SD\\Managed\\Events', 'Managed', 'Domestic_SD_Universe', '637898877227230030', '09/28/2022', 0)
+makeStarBundle('./.temp/i2State/SD/Managed/Events', 'Managed', 'Domestic_SD_Universe', '637898877227230030', '09/28/2022', 0)

@@ -40,7 +40,7 @@ def getData(airport):
     # Write to i2doc file
     i2Doc = f'<AirportDelays id="000000000" locationKey="{airport}" isWxScan="0">' + '' + newData + f'<clientKey>{airport}</clientKey></AirportDelays>' 
 
-    f = open("D:\\AirportDelays.i2m", 'a')
+    f = open("./.temp/AirportDelays.i2m", 'a')
     f.write(i2Doc)
     f.close()
 
@@ -64,29 +64,29 @@ def writeData():
         header = '<Data type="AirportDelays">'
         footer = "</Data>"
 
-        with open("D:\\AirportDelays.i2m", 'w') as doc:
+        with open("./.temp/AirportDelays.i2m", 'w') as doc:
             doc.write(header)
 
         for x in airportsWithDelays:
             getData(x)
 
-        with open("D:\\AirportDelays.i2m", 'a') as end:
+        with open("./.temp/AirportDelays.i2m", 'a') as end:
             end.write(footer)
 
-        dom = xml.dom.minidom.parse("D:\\AirportDelays.i2m")
+        dom = xml.dom.minidom.parse("./.temp/AirportDelays.i2m")
         prettyXml = dom.toprettyxml(indent="  ")
 
-        with open("D:\\AirportDelays.i2m", 'w') as g:
+        with open("./.temp/AirportDelays.i2m", 'w') as g:
             g.write(prettyXml)
             g.close()
 
         files = []
         commands = []
-        with open("D:\\AirportDelays.i2m", 'rb') as f_in:
-            with gzip.open("D:\\AirportDelays.gz", 'wb') as f_out:
+        with open("./.temp/AirportDelays.i2m", 'rb') as f_in:
+            with gzip.open("./.temp/AirportDelays.gz", 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
 
-        gZipFile = "D:\\AirportDelays.gz"
+        gZipFile = "./.temp/AirportDelays.gz"
 
         files.append(gZipFile)
         comand = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__AirportDelays__,Feed=AirportDelays)" /><GzipCompressedMsg fname="AirportDelays" /></MSG>')
@@ -94,7 +94,7 @@ def writeData():
 
         bit.sendFile(files, commands, numFiles, 0)
 
-        os.remove("D:\\AirportDelays.i2m")
-        os.remove("D:\\AirportDelays.gz")
+        os.remove("./.temp/AirportDelays.i2m")
+        os.remove("./.temp/AirportDelays.gz")
     else:
         l.info("No airport delays found.")

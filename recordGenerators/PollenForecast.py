@@ -46,7 +46,7 @@ def getData(pollenId, geocode):
     #Write to .i2m file
     i2Doc = '<PollenForecast id="000000000" locationKey="' + str(pollenId) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(pollenId) + '</clientKey></PollenForecast>'
 
-    f = open("D:\\PollenForecast.i2m", "a")
+    f = open("./.temp/PollenForecast.i2m", "a")
     f.write(i2Doc)
     f.close()
 
@@ -56,30 +56,30 @@ def makeDataFile():
     header = '<Data type="PollenForecast">'
     footer = '</Data>'
 
-    with open("D:\\PollenForecast.i2m", 'w') as doc:
+    with open("./.temp/PollenForecast.i2m", 'w') as doc:
         doc.write(header)
 
     for x, y in zip(pollenIds, geocodes):
         getData(x, y)
         
-    with open("D:\\PollenForecast.i2m", 'a') as end:
+    with open("./.temp/PollenForecast.i2m", 'a') as end:
         end.write(footer)
 
 
-    dom = xml.dom.minidom.parse("D:\\PollenForecast.i2m")
+    dom = xml.dom.minidom.parse("./.temp/PollenForecast.i2m")
     pretty_xml_as_string = dom.toprettyxml(indent = "  ")
 
-    with open("D:\\PollenForecast.i2m", "w") as g:
+    with open("./.temp/PollenForecast.i2m", "w") as g:
         g.write(pretty_xml_as_string[23:])
         g.close()
 
     files = []
     commands = []
-    with open("D:\\PollenForecast.i2m", 'rb') as f_in:
-        with gzip.open("D:\\PollenForecast.gz", 'wb') as f_out:
+    with open("./.temp/PollenForecast.i2m", 'rb') as f_in:
+        with gzip.open("./.temp/PollenForecast.gz", 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
 
-    gZipFile = "D:\\PollenForecast.gz"
+    gZipFile = "./.temp/PollenForecast.gz"
 
     files.append(gZipFile)
     command = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__PollenForecast__,Feed=PollenForecast)" /><GzipCompressedMsg fname="PollenForecast" /></MSG>')
@@ -87,5 +87,5 @@ def makeDataFile():
 
     bit.sendFile(files, commands, numFiles, 0)
 
-    os.remove("D:\\PollenForecast.i2m")
-    os.remove("D:\\PollenForecast.gz")
+    os.remove("./.temp/PollenForecast.i2m")
+    os.remove("./.temp/PollenForecast.gz")
