@@ -317,6 +317,7 @@ def getAlerts(location):
 # TODO: This should be converted into a function so it works better with async, that way we're not getting hung up on that time.sleep() call.
 
 def makeRecord():
+    global k
     with open("./.temp/BERecord.xml", 'a') as BERecord:
         BERecord.write('<Data type="BERecord">')
         BERecord.close()
