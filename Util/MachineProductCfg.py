@@ -3,7 +3,7 @@ import xmltodict
 
 
 # Open the MachineProductCfg.xml file in the root directory
-with open("MachineProductCfg.xml") as MPCxml:
+with open("MachineProductCfg.xml", mode = 'r', encoding= 'utf-8') as MPCxml:
     MPCdict = xmltodict.parse(MPCxml.read())
     MPCdump = json.dumps(MPCdict)
     data = json.loads(MPCdump)
