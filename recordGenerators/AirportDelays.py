@@ -25,7 +25,7 @@ for i in MPC.getPrimaryLocations():
     zipCodes.append(LFR.getZip(i))
 
 airports = MPC.getAirportCodes()
-print(airports)
+l.debug(airports)
 
 apiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
 

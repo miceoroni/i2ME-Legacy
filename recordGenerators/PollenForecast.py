@@ -27,7 +27,7 @@ for i in MPC.getPrimaryLocations():
     pollenIds.append(LFR.getPollenInfo(i))
     geocodes.append(LFR.getLatLong(i).replace('/', ','))
 
-print(pollenIds, geocodes)
+l.debug(pollenIds, geocodes)
 
 apiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
 
