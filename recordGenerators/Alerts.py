@@ -2,7 +2,7 @@ import requests
 import json
 import os
 from datetime import datetime,timedelta
-from Util.MachineProductCfg import getZones
+from Util.MachineProductCfg import getAlertZones
 import time
 import pytz
 import xml.dom.minidom
@@ -19,7 +19,7 @@ l = logging.getLogger(__name__)
 coloredlogs.install()
 
 #Zones/Counties to fetch alerts for
-zones = getZones()
+alertLocations = getAlertZones()
 
 #You can safely edit the API key here. Make sure to include the ' before and after the key
 headlineApiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
@@ -325,7 +325,7 @@ def makeRecord():
         BERecord.write('<Data type="BERecord">')
         BERecord.close()
 
-    for z in zones:
+    for z in alertLocations:
         getAlerts(z)
     
     with open('./.temp/BERecord.xml', 'a') as BERecord:

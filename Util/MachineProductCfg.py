@@ -40,7 +40,7 @@ def getAirportCodes():
 
     return airports
 
-def getZones():
+def getAlertZones():
     """ Returns a list of zones present in the MachineProductCfg """
     zones = []
     for i in data['Config']['ConfigDef']['ConfigItems']['ConfigItem']:
@@ -51,6 +51,8 @@ def getZones():
             for x in i['@value'].split(','):
                 zones.append(x)
 
-    return zones
+        if i['@key'] == "secondaryCounties" and i['@value'] != "":
+            for x in i['@value'].split(','):
+                zones.append(x)
 
-print(getZones())
+    return zones
