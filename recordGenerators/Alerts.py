@@ -38,31 +38,31 @@ def getAlerts(location):
     
     #Set the actions based on response code
     if theCode == 204:
-        print('No alerts for area ' + location + '.\n')
+        l.info('No alerts for area ' + location + '.\n')
         return
     elif theCode == 403:
-        print("Uh oh! Your API key may not be authorized for alerts. Tsk Tsk. Maybe you shouldn't pirate IBM data :)\n")
+        l.critical("Uh oh! Your API key may not be authorized for alerts. Tsk Tsk. Maybe you shouldn't pirate IBM data :)\n")
         return
     elif theCode == 401:
-        print("Uh oh! This request requires authentication. Maybe you shouldn't try to access resources for IBM employee's only :)\n")
+        l.critical("Uh oh! This request requires authentication. Maybe you shouldn't try to access resources for IBM employee's only :)\n")
         return
     elif theCode == 404:
-        print("Uh oh! The requested resource cannot be found. This means either the URL is wrong or IBM is having technical difficulties :(\n Or.... They deleted the API :O\n")
+        l.error("Uh oh! The requested resource cannot be found. This means either the URL is wrong or IBM is having technical difficulties :(\n Or.... They deleted the API :O\n")
         return
     elif theCode == 405:
-        print("Uh oh! Got a 405! This means that somehow.... someway..... this script made an invalid request. So sad..... So terrible..... :(\n")
+        l.error("Uh oh! Got a 405! This means that somehow.... someway..... this script made an invalid request. So sad..... So terrible..... :(\n")
         return
     elif theCode == 406:
-        print("Uh oh! Got a 406! This means that IBM doesn't like us. :(\n")
+        l.critical("Uh oh! Got a 406! This means that IBM doesn't like us. :(\n")
         return
     elif theCode == 408:
-        print("Uh oh! We were too slow in providing IBM our alert request. Although I prefer to say we were Slowly Capable! :)\n")
+        l.error("Uh oh! We were too slow in providing IBM our alert request. Although I prefer to say we were Slowly Capable! :)\n")
         return
     elif theCode == 500:
-        print("Uh oh! Seems IBM's on call IT Tech spilled coffee on the server! Looks like no alerts for a while. Please check back later :)\n")
+        l.error("Uh oh! Seems IBM's on call IT Tech spilled coffee on the server! Looks like no alerts for a while. Please check back later :)\n")
         return
     elif theCode == 502 or theCode == 503 or theCode == 504:
-        print("Uh oh! This is why you don't have interns messing with the server configuration. Please stand by while IBM's on call IT Tech resolves the issue :)\n")
+        l.error("Uh oh! This is why you don't have interns messing with the server configuration. Please stand by while IBM's on call IT Tech resolves the issue :)\n")
         return
     elif theCode == 200:
         pass
