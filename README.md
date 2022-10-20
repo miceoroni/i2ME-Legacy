@@ -7,6 +7,7 @@ This software handles data collection and processing for The Weather Channel's I
 
 ## Records
 - [x] ADRecord - Airport Delays
+- [x] BERecord - Alerts
 - [ ] ClimatologyRecord - Record highs/lows
 - [x] DDRecord - Daypart Forecast
 - [x] DFRecord - Daily Forecast (7 Day Forecast)
