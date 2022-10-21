@@ -185,11 +185,11 @@ def convertPaletteToWXPro(filepath:str):
     img.opaque_paint(Color('rgb(128,0,0)'), rainColors[7], 7000.0)
 
     # Replace mix colors
-    img.opaque_paint(Color('rgb(255,160,207)'), mixColors[0], 100.0)
-    img.opaque_paint(Color('rgb(217,110,163)'), mixColors[1], 100.0)
-    img.opaque_paint(Color('rgb(192,77,134)'), mixColors[2], 100.0)
-    img.opaque_paint(Color('rgb(174,51,112)'), mixColors[3], 100.0)
-    img.opaque_paint(Color('rgb(146,13,79)'), mixColors[3], 100.0)
+    img.opaque_paint(Color('rgb(255,160,207)'), mixColors[0], 7000.0)
+    img.opaque_paint(Color('rgb(217,110,163)'), mixColors[1], 7000.0)
+    img.opaque_paint(Color('rgb(192,77,134)'), mixColors[2], 7000.0)
+    img.opaque_paint(Color('rgb(174,51,112)'), mixColors[3], 7000.0)
+    img.opaque_paint(Color('rgb(146,13,79)'), mixColors[3], 7000.0)
 
     # Replace snow colors
     img.opaque_paint(Color('rgb(138,248,255)'), snowColors[0], 7000.0)
