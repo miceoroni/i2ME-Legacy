@@ -30,10 +30,10 @@ def getData(coopId, geocode):
         l.error(f"Failed to write HeatingAndCooling record -- Status code {res.status_code}")
         return
     
-    data = res.text()
-    data = data[63:-26]
+    data = res.text
+    newData = data[63:-26]
 
-    i2Doc = f'<HeatingAndCooling id="000000000" locationKey="{coopId}" isWxScan="0">\n    {data}\n    <clientKey>{coopId}</clientKey>\n </HeatingAndCooling>'
+    i2Doc = f'\n  <HeatingAndCooling id="000000000" locationKey="{coopId}" isWxScan="0">\n    {newData}\n    <clientKey>{coopId}</clientKey>\n </HeatingAndCooling>'
 
     f = open('./.temp/HeatingAndCooling.i2m', 'a')
     f.write(i2Doc)
@@ -42,7 +42,7 @@ def getData(coopId, geocode):
 def makeRecord():
     l.info("Writing HeatingAndCooling record.")
 
-    header = '<Data type="HeatingAndCooling"'
+    header = '<Data type="HeatingAndCooling">'
     footer = '</Data>'
 
     with open('./.temp/HeatingAndCooling.i2m', 'a') as doc:
