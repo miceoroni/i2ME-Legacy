@@ -60,8 +60,7 @@ async def HourUpdaters():
         Breathing.makeDataFile()
         HeatingAndCooling.makeRecord()
         WateringNeeds.makeRecord()
-        # This returns a 401 at the moment and im not sure why.
-        # MosquitoActivity.makeRecord()
+        MosquitoActivity.makeRecord()
         AchesAndPains.makeRecord()
         TideForecast.makeRecord()
         l.debug("Sleeping for an hour...")
