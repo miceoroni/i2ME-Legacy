@@ -2,7 +2,7 @@ import asyncio
 from asyncio.log import logger
 from asyncore import loop
 import logging,coloredlogs
-import recordGenerators as RG
+from recordGenerators import Alerts,CurrentObservations,DailyForecast,HourlyForecast,AirportDelays,AirQuality,HeatingAndCooling,PollenForecast,Breathing
 from radar import TWCRadarProcessor, RadarProcessor
 import os
 
@@ -35,7 +35,7 @@ l.info("Developed by mewtek32, Floppaa, Goldblaze, and needlenose")
 
 async def grabAlertsLoop():
     while True:
-        RG.Alerts.makeRecord()
+        Alerts.makeRecord()
         await asyncio.sleep(60)
 
 
@@ -47,19 +47,19 @@ async def grabAlertsLoop():
 
 async def FiveMinUpdaters():
     while True:
-        RG.CurrentObservations.makeDataFile()
+        CurrentObservations.makeDataFile()
         l.debug("Sleeping for 5 minutes...")
         await asyncio.sleep(5 * 60)
 
 async def HourUpdaters():
     while True:
-        RG.DailyForecast.makeDataFile()
-        RG.HourlyForecast.makeDataFile()
-        RG.AirQuality.writeData()
-        RG.PollenForecast.makeDataFile()
-        RG.AirportDelays.writeData()
-        RG.Breathing.makeDataFile()
-        RG.HeatingAndCooling.makeRecord()
+        DailyForecast.makeDataFile()
+        HourlyForecast.makeDataFile()
+        AirQuality.writeData()
+        PollenForecast.makeDataFile()
+        AirportDelays.writeData()
+        Breathing.makeDataFile()
+        HeatingAndCooling.makeRecord()
         l.debug("Sleeping for an hour...")
         await asyncio.sleep(60 * 60)
 
