@@ -29,6 +29,12 @@ def getPrimaryLocations():
 
     return locationIds
 
+def getTideStations():
+    """ Returns all of the tide stations present in the MachineProductCfg """
+    stations = []
+    for i in data['Config']['ConfigDef']['ConfigItems']['ConfigItem']:
+        if "TideStation" in i['@key'] and i['@value'] != "":
+            stations.append(i['@value'].split("_")[2])
 
 def getAirportCodes():
     """ Returns all of the airport identifiers present in the MachineProductCfg """
