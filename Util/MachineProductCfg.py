@@ -36,6 +36,8 @@ def getTideStations():
         if "TideStation" in i['@key'] and i['@value'] != "":
             stations.append(i['@value'].split("_")[2])
 
+    return stations
+
 def getAirportCodes():
     """ Returns all of the airport identifiers present in the MachineProductCfg """
     airports = []
