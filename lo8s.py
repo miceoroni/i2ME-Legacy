@@ -2,6 +2,7 @@ import py2Lib.bit as bit
 import time
 from datetime import datetime,timedelta
 import random
+import secrets
 
 theNow = datetime.now()
     
@@ -54,7 +55,7 @@ def runLo8s(flavor, duration, LDL, logo = None, LDLColor = None, EmergencyLFCanc
         time.sleep(27)
     elif logo != '':
         print('Sending Load Command To All Stars. The Local On The 8s is expected to start at ' + friendlyLo8sRunTime + ' ...')
-        bit.sendCommand(['<MSG><Exec workRequest="loadPres(File={0},VideoBehind=000,Logo=domesticAds/tag'+ logo +',Flavor=domestic/'+flavor+',Duration='+duration+',PresentationId='+Id+')" /></MSG>'], 1)
+        bit.sendCommand(['<MSG><Exec workRequest="loadPres(File={0},VideoBehind=000,Logo=domesticAds/TAG'+ logo +',Flavor=domestic/'+flavor+',Duration='+duration+',PresentationId='+Id+')" /></MSG>'], 1)
         time.sleep(27)
     else:
         print('Sending Load Command To All Stars. The Local On The 8s is expected to start at ' + friendlyLo8sRunTime + ' ...')
@@ -75,29 +76,29 @@ def runLo8s(flavor, duration, LDL, logo = None, LDLColor = None, EmergencyLFCanc
         time.sleep(53)
 
     if EmergencyLFCancel == 1:
-        color = None
-        if LDLColor == 0:
-            color = 'E'
-        elif LDLColor == 1:
-            color = 'F'
-        else:
-            color = 'E'
+        #color = None
+        #if LDLColor == 0:
+            #color = 'E'
+        #elif LDLColor == 1:
+            #color = 'F'
+        #else:
+            #color = 'E'
         print("\nGetting The LDL Ready So It'll Cue After The National DBS Local Forecast")
-        bit.sendCommand(['<MSG><Exec workRequest="loadPres(File={0},Flavor=domestic/ldl'+color+',Duration=72000,PresentationId=LDL1)" /></MSG>'], 1)
+        bit.sendCommand(['<MSG><Exec workRequest="loadPres(File={0},Flavor=domestic/ldl'+LDLColor+',Duration=72000,PresentationId=LDL1)" /></MSG>'], 1)
         time.sleep(10)
         print("\nSending The Run Command For The LDL...")
         bit.sendCommand(['<MSG><Exec workRequest="runPres(File={0},PresentationId=LDL1,StartTime='+nextLDLRun+')" /></MSG>'], 1)
     elif LDL == 1:
-        color = None
-        if LDLColor == 0:
-            color = 'E'
-        elif LDLColor == 1:
-            color = 'F'
-        else:
-            color = 'E'
+        #color = None
+        #if LDLColor == 0:
+            #color = 'E'
+        #elif LDLColor == 1:
+            #color = 'F'
+        #else:
+            #color = 'E'
         #Load LDL
         print("\nGetting The LDL Ready So It'll Cue After This Local Forecast...")
-        bit.sendCommand(['<MSG><Exec workRequest="loadPres(File={0},Flavor=domestic/ldl'+color+',PresentationId=LDL1)" /></MSG>'], 1)
+        bit.sendCommand(['<MSG><Exec workRequest="loadPres(File={0},Flavor=domestic/ldl'+LDLColor+',PresentationId=LDL1)" /></MSG>'], 1)
         time.sleep(10)
         #Run LDL
         print('''\nSending The Run Command For The LDL. As Dave Schwartz Would Say... "That's a Wrap!"''')
@@ -106,15 +107,59 @@ def runLo8s(flavor, duration, LDL, logo = None, LDLColor = None, EmergencyLFCanc
         time.sleep(10)
         print('''That's It Folks. As Dave Schwartz Would Say... "That's a Wrap!"''')
 
-BG = ['3094', '3095', '3103', '3115', '3093']
+#----- SET BACKGROUNDS HERE ----------------------#
+BGCatastrophic = ['3094', '3095', '3103', '3115']
+BGStorm = []
+BGAlert = ['3094', '3095', '3103', '3115']
+#BGNight = ['3091', '3092', '3102', '3114', '3191']
+BGNorm = ['3091', '3092', '3102', '3114']
 
-#if currentHour == '22' or currentHour == '23' or currentHour == '00' or currentHour == '06' or currentHour == '07' or currentHour == '08' or currentHour == '09' or currentHour == '10' or currentHour == '11' or currentHour == '12' or currentHour == '13' or currentHour == '14' or currentHour == '15' or currentHour == '16' or currentHour == '17' or currentHour == '18' or currentHour == '19' or currentHour == '20' or currentHour == '21':
-branded = random.choice(BG)
-#else:
-    #branded = ''
+#------------------------------------------------------------------------
 
-#Flavor, Duration, Air LDL After Forecast (1 For Yes or 0 For No), Logo(Optional), LDL Color Mode (Leave blank for normal or 1 for Severe Mode), Emergency Local On The 8s Kill Switch (1 For Kill or leave blank for normal)
-runLo8s('V2', '65', 1, branded, 1) #5053 Jonas
-#V for Normal Black Logo
-#V2 for Red Logo
+#------ BG RULES SECTION ------------------------#
 
+if BGCatastrophic:
+    brandedCatastrophic = random.choice(BGCatastrophic)
+else:
+    brandedCatastrophic = ''
+if BGStorm:
+    brandedStorm = random.choice(BGStorm)
+else:
+    brandedStorm = ''
+if BGAlert:
+    brandedAlert = random.choice(BGAlert)
+else:
+    brandedAlert = ''
+
+if BGNorm:
+    brandedNormal = random.choice(BGNorm)
+else:
+    brandedNormal = ''
+#----------------------------------------------
+
+i = 0
+while i == 0:
+    mode = input('\nPlease specify mode. 1 for "Normal", 2 for "Alert", 3 for "Storm Mode", 4 for "Catastrophic", 5 for "Tag" or 0 for "Unbranded"\n')
+    if mode == '5':
+        ad = input('Please specify Tag Number.\n')
+        flavor = input("Flavor Overide? Default is 'V'.\nEnter flavor letter or enter to bypass...")
+        if flavor == '':
+            runLo8s('V', '65', 1, ad, 'E')
+        else:
+            runLo8s(flavor, '65', 1, ad, 'E')
+    elif mode == '4':
+        runLo8s('V2', '65', 1, brandedCatastrophic, 'F')
+    elif mode == '3':
+        runLo8s('V1', '65', 1, brandedStorm, 'STORM')
+    elif mode == '2':
+        runLo8s('V', '65', 1, brandedAlert, 'E')
+    elif mode == '1':
+        runLo8s('V', '65', 1, brandedNormal, 'E')
+    elif mode == '0':
+        runLo8s('V', '65', 1, '', 'E')
+    else:
+        print("An invalid mode was specified. This is not allowed! Will now shutdown...\n")
+        time.sleep(5)
+        i = 1
+
+#runLo8s('V', '65', 1, brandedNormal, 'E')
