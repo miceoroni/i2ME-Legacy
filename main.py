@@ -2,8 +2,7 @@ import asyncio
 from asyncio.log import logger
 from asyncore import loop
 import logging,coloredlogs
-from recordGenerators import Alerts,CurrentObservations,DailyForecast,HourlyForecast,AirportDelays,AirQuality,HeatingAndCooling,PollenForecast,Breathing
-from radar import TWCRadarProcessor, RadarProcessor
+from recordGenerators import Alerts,CurrentObservations,DailyForecast,HourlyForecast,AirportDelays,AirQuality,HeatingAndCooling,PollenForecast,Breathing, AchesAndPains, MosquitoActivity, WateringNeeds, TideForecast
 import os
 
 l = logging.getLogger(__name__)
@@ -60,6 +59,11 @@ async def HourUpdaters():
         AirportDelays.writeData()
         Breathing.makeDataFile()
         HeatingAndCooling.makeRecord()
+        WateringNeeds.makeRecord()
+        # This returns a 401 at the moment and im not sure why.
+        # MosquitoActivity.makeRecord()
+        AchesAndPains.makeRecord()
+        TideForecast.makeRecord()
         l.debug("Sleeping for an hour...")
         await asyncio.sleep(60 * 60)
 
