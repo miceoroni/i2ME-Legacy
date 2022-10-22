@@ -21,7 +21,7 @@ for i in MPC.getPrimaryLocations():
 apiKey = "21d8a80b3d6b444998a80b3d6b1449d3"
 
 def getData(coopId, geocode):
-    fetchUrl = f"https://api.weather.com/indices/heatCool/daypart/7day?geocode={geocode}&language=en-US&format=xml&apiKey={apiKey}"
+    fetchUrl = f"https://api.weather.com/v2/indices/heatCool/daypart/7day?geocode={geocode}&language=en-US&format=xml&apiKey={apiKey}"
 
     res = requests.get(fetchUrl)
 
