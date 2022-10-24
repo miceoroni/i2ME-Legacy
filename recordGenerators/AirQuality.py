@@ -97,6 +97,7 @@ def writeData():
         except Exception as e:
             l.error("DO NOT REPORT THE ERROR BELOW")
             l.error("Failed to write an AirQuality record.")
+            os.remove('./.temp/AirQuality.i2m')
     else:
         l.info("Not writing an AirQuality record due to a lack of working EPA ids.")
 
