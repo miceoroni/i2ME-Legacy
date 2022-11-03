@@ -3,24 +3,28 @@ from asyncio.log import logger
 from asyncore import loop
 import logging,coloredlogs
 from recordGenerators import Alerts,CurrentObservations,DailyForecast,HourlyForecast,AirportDelays,AirQuality,HeatingAndCooling,PollenForecast,Breathing, AchesAndPains, MosquitoActivity, WateringNeeds, TideForecast
+from radar import TWCRadarCollector
 import os
+from datetime import datetime
 
 l = logging.getLogger(__name__)
 coloredlogs.install(logger=l)
 
+radarTypes = ['radarmosaic']    # TODO: Fix satrad radar server to generate properly.
+
 # Create dirs and files
-if not os.path.exists('./.temp/'):
-    os.makedirs('./.temp/')
+if not os.path.exists('.temp/'):
+    os.makedirs('.temp/')
 
-if not os.path.exists('./.temp/tiles/'):
-    os.makedirs('./.temp/tiles/')
+if not os.path.exists('.temp/tiles/'):
+    os.makedirs('.temp/tiles/')
 
-if not os.path.exists('./.temp/tiles/output/'):
-    os.makedirs('./.temp/tiles/output/')
+if not os.path.exists('.temp/tiles/output/'):
+    os.makedirs('.temp/tiles/output/')
 
-if not os.path.exists('./.temp/msgId.txt'):
+if not os.path.exists('.temp/msgId.txt'):
     print("Creating initial msgId file")
-    with open('./.temp/msgId.txt', "w") as f:
+    with open('.temp/msgId.txt', "w") as f:
         f.write("410080515")
 
 
@@ -36,13 +40,6 @@ async def grabAlertsLoop():
     while True:
         Alerts.makeRecord()
         await asyncio.sleep(60)
-
-
-# THIS IS BROKEN AT THE MOMENT -- COME BACK LATER.
-# async def RadarProcessingLoop():
-#     while True:
-#         await TWCRadarProcessor.makeRadarImages()
-#         await asyncio.sleep(30 * 60)
 
 async def FiveMinUpdaters():
     while True:
@@ -65,6 +62,17 @@ async def HourUpdaters():
         TideForecast.makeRecord()
         l.debug("Sleeping for an hour...")
         await asyncio.sleep(60 * 60)
+
+async def radarCollector():
+    radarUpdateIntervalMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    while True:
+        # Server takes ~15 - 35 seconds on average to fully generate a frame, use 40 seconds
+        # to make sure the radar frame is fully good to go
+        if datetime.now().minute in radarUpdateIntervalMinutes and datetime.now().second == 40:
+            for type in radarTypes:
+                await TWCRadarCollector.collect(type)
+        
+        await asyncio.sleep(30)
 
 loop = asyncio.get_event_loop()
 alertTask = loop.create_task(grabAlertsLoop())
