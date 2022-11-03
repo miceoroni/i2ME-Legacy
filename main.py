@@ -10,7 +10,7 @@ from datetime import datetime
 l = logging.getLogger(__name__)
 coloredlogs.install(logger=l)
 
-radarTypes = ['radarmosaic']    # TODO: Fix satrad radar server to generate properly.
+radarTypes = ['radarmosaic', 'satrad']
 
 # Create dirs and files
 if not os.path.exists('.temp/'):
