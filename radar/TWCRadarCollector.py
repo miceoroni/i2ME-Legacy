@@ -93,6 +93,10 @@ async def collect(radarType: str):
 
     commands = []
     for i in range(0, len(frames)):
-        commands.append( '<MSG><Exec workRequest="storePriorityImage(FileExtension=.tiff,File={0},Location=US,ImageType=Radar,IssueTime=' + getTime(ts[i]) + ')"/></MSG>' )
+        if radarType == "radarmosaic":
+            commands.append( '<MSG><Exec workRequest="storePriorityImage(FileExtension=.tiff,File={0},Location=US,ImageType=Radar,IssueTime=' + getTime(ts[i]) + ')"/></MSG>' )
+        
+        if radarType == "satrad":
+            commands.append( '<MSG><Exec workRequest="storePriorityImage(FileExtension=.tiff,File={0},Location=US,ImageType=SatRad,IssueTime=' + getTime(ts[i]) + ')"/></MSG>' )
 
         bit.sendFile([frames[i]], [commands[i]], 1, 0)
