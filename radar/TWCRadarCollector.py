@@ -4,7 +4,7 @@ import aiofiles
 import logging, coloredlogs
 from py2Lib import bit
 from datetime import datetime
-from os import path, mkdir
+from os import path, listdir, remove
 
 l = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
@@ -52,6 +52,12 @@ async def downloadRadarFrames(radarType:str, timestamps: list) -> list:
     else:
         l.error(f'Invalid radar type "{radarType}" -- Valid radar types include "satrad", "radarmosaic"')
         return
+
+    # Clear out expired radar frames
+    for i in listdir('./.temp/tiles/output'):
+        if i.split('.')[0] not in [str(x) for x in timestamps] and i != "Thumbs.db":
+            l.debug(f"Deleting {i} as it is no longer valid.")
+            remove("./.temp/tiles/output/" + i) 
 
     async with aiohttp.ClientSession() as s:
 
