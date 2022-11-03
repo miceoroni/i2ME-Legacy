@@ -88,11 +88,6 @@ def getTime(timestamp) -> str:
     return str(time)
 
 async def collect(radarType: str):
-
-    if radarType != "satrad" or radarType != "radarmosaic":
-        l.error(f'Invalid radar type "{radarType}" -- Valid radar types include "satrad", "radarmosaic"')
-        return
-
     ts = await getValidTimestamps(radarType)
     frames = await downloadRadarFrames(radarType, ts)
 
