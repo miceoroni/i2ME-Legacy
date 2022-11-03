@@ -72,7 +72,7 @@ async def radarCollector():
             for type in radarTypes:
                 await TWCRadarCollector.collect(type)
         
-        await asyncio.sleep(30)
+        await asyncio.sleep(1)
 
 loop = asyncio.get_event_loop()
 alertTask = loop.create_task(grabAlertsLoop())
