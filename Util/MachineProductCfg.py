@@ -59,6 +59,9 @@ def getAlertZones():
             for x in i['@value'].split(','):
                 zones.append(x)
 
+        if i['@key'] == 'primaryCounty' and i['@value'] != "":
+            zones.append(i['@value'])
+ 
         if i['@key'] == "secondaryCounties" and i['@value'] != "":
             for x in i['@value'].split(','):
                 zones.append(x)
