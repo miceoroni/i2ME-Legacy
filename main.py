@@ -78,11 +78,11 @@ loop = asyncio.get_event_loop()
 alertTask = loop.create_task(grabAlertsLoop())
 CCtask = loop.create_task(FiveMinUpdaters())
 ForecastsTask = loop.create_task(HourUpdaters())
-radarTask = loop.create_task(radarCollector())
+# radarTask = loop.create_task(radarCollector())
 
 try:
     loop.run_until_complete(alertTask)
     loop.run_until_complete(CCtask)
     loop.run_until_complete(ForecastsTask)
-    loop.run_until_complete(radarTask)
+    # loop.run_until_complete(radarTask)
 except asyncio.CancelledError: pass
