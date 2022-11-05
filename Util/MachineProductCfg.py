@@ -29,6 +29,14 @@ def getPrimaryLocations():
 
     return locationIds
 
+def getMetroCities():
+    """ Returns all Metro Map locations in the MPC """
+    locationIds = []
+
+    for i in data['Config']['ConfigDef']['ConfigItems']['ConfigItem']:
+        if 'MetroMapCity' in i['@key'] and i['@value'] != "":
+            locationIds.append(i['@value'].split("_")[2])
+
 def getTideStations():
     """ Returns all of the tide stations present in the MachineProductCfg """
     stations = []
