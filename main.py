@@ -10,7 +10,7 @@ from datetime import datetime
 l = logging.getLogger(__name__)
 coloredlogs.install(logger=l)
 
-radarTypes = ['radarmosaic', 'satrad']
+useRadarServer = True
 
 # Create dirs and files
 if not os.path.exists('.temp/'):
@@ -64,13 +64,17 @@ async def HourUpdaters():
         await asyncio.sleep(60 * 60)
 
 async def radarCollector():
-    radarUpdateIntervalMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    mosaicUpdateIntervals = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    satradUpdateIntervals = [0, 10, 20, 30, 40, 50]
+
     while True:
         # Server takes ~15 - 35 seconds on average to fully generate a frame, use 40 seconds
         # to make sure the radar frame is fully good to go
-        if datetime.now().minute in radarUpdateIntervalMinutes and datetime.now().second == 40:
-            for type in radarTypes:
-                await TWCRadarCollector.collect(type)
+        if datetime.now().minute in mosaicUpdateIntervals and datetime.now().second == 40:
+            await TWCRadarCollector.collect("radarmosaic")
+
+        if datetime.now().minute in satradUpdateIntervals and datetime.now().second == 45:
+            await TWCRadarCollector.collect("satrad")
         
         await asyncio.sleep(1)
 
@@ -78,11 +82,12 @@ loop = asyncio.get_event_loop()
 alertTask = loop.create_task(grabAlertsLoop())
 CCtask = loop.create_task(FiveMinUpdaters())
 ForecastsTask = loop.create_task(HourUpdaters())
-# radarTask = loop.create_task(radarCollector())
+
+if useRadarServer: radarTask = loop.create_task(radarCollector())
 
 try:
     loop.run_until_complete(alertTask)
     loop.run_until_complete(CCtask)
     loop.run_until_complete(ForecastsTask)
-    # loop.run_until_complete(radarTask)
+    if useRadarServer: loop.run_until_complete(radarTask)
 except asyncio.CancelledError: pass
