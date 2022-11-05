@@ -54,10 +54,10 @@ async def downloadRadarFrames(radarType:str, timestamps: list) -> list:
         return
 
     # Clear out expired radar frames
-    for i in listdir(f'.temp/tiles/output/{radarType}'):
+    for i in listdir(f'.temp/output/{radarType}'):
         if i.split('.')[0] not in [str(x) for x in timestamps] and i != "Thumbs.db":
             l.debug(f"Deleting {i} as it is no longer valid.")
-            remove(f".temp/tiles/output/{radarType}/" + i) 
+            remove(f".temp/output/{radarType}/" + i) 
 
     async with aiohttp.ClientSession() as s:
 
