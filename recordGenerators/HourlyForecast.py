@@ -25,6 +25,11 @@ for i in MPC.getPrimaryLocations():
     tecciId.append(LFR.getCoopId(i))
     zipCodes.append(LFR.getZip(i))
 
+for i in MPC.getMetroCities():
+    tecciId.append(LFR.getCoopId(i))
+    zipCodes.append(LFR.getZip(i))
+
+
 apiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
 
 def getData(tecci, zipCode):
