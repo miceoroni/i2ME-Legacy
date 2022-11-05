@@ -37,6 +37,8 @@ def getMetroCities():
         if 'MetroMapCity' in i['@key'] and i['@value'] != "":
             locationIds.append(i['@value'].split("_")[2])
 
+    return locationIds
+
 def getTideStations():
     """ Returns all of the tide stations present in the MachineProductCfg """
     stations = []
