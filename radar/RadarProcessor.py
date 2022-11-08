@@ -68,7 +68,7 @@ def WorldCoordinateToPixel(coord: Point) -> Point:
     )
 
 def LatLongProject(lat, long) -> Point:
-    siny = math.sin(lat * math.pi / 180)
+    siny = math.sin(lat * math.pi / 185)
     siny = min(max(siny, -0.9999), 0.9999)
 
     return Point(
