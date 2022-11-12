@@ -59,25 +59,26 @@ async def makeDataFile():
     header = '<Data type="CurrentObservations">'
     footer = '</Data>'
 
-    with open("./.temp/CurrentObservations.i2m", 'w') as doc:
-        doc.write(header)
+    async with aiofiles.open("./.temp/CurrentObservations.i2m", 'w') as doc:
+        await doc.write(header)
 
     for x, y in zip(tecciId, zipCodes):
         getData(x, y)
         
-    with open("./.temp/CurrentObservations.i2m", 'a') as end:
-        end.write(footer)
+    async with aiofiles.open("./.temp/CurrentObservations.i2m", 'a') as end:
+        await end.write(footer)
 
     dom = xml.dom.minidom.parse("./.temp/CurrentObservations.i2m")
     pretty_xml_as_string = dom.toprettyxml(indent = "  ")
 
-    with open("./.temp/CurrentObservations.i2m", "w") as g:
-        g.write(pretty_xml_as_string[23:])
-        g.close()
+    async with aiofiles.open("./.temp/CurrentObservations.i2m", "w") as g:
+        await g.write(pretty_xml_as_string[23:])
+        await g.close()
 
     files = []
     commands = []
 
+    # This causes blocking but there's not really much we can do about it :(
     with open("./.temp/CurrentObservations.i2m", 'rb') as f_in:
         with gzip.open("./.temp/CurrentObservations.gz", 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
