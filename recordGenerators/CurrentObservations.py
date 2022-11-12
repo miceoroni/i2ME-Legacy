@@ -63,7 +63,7 @@ async def makeDataFile():
         await doc.write(header)
 
     for x, y in zip(tecciId, zipCodes):
-        getData(x, y)
+        await getData(x, y)
         
     async with aiofiles.open("./.temp/CurrentObservations.i2m", 'a') as end:
         await end.write(footer)
