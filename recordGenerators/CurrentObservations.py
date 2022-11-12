@@ -6,6 +6,8 @@ import os
 import shutil
 import xml.dom.minidom
 import logging,coloredlogs
+import aiofiles
+import aiohttp
 
 import sys
 sys.path.append("./py2lib")
@@ -34,27 +36,25 @@ for i in MPC.getMetroCities():
 
 apiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
 
-def getData(tecci, zipCode):
+async def getData(tecci, zipCode):
+    l.debug('Gathering data for location id ' + tecci)
     fetchUrl = 'https://api.weather.com/v1/location/' + zipCode + ':4:US/observations/current.xml?language=en-US&units=e&apiKey=' + apiKey
+    data = ""
 
-    #Fetch data
-
-    response = requests.get(fetchUrl) 
-
-    data = response.text
+    async with aiohttp.ClientSession() as s:
+        async with s.get(fetchUrl) as r:
+            data = await r.text()
 
     newData = data[67:-30]
 
-    l.debug('Gathering data for location id ' + tecci)
     #Write to .i2m file
     i2Doc = '<CurrentObservations id="000000000" locationKey="' + str(tecci) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(tecci) + '</clientKey></CurrentObservations>'
+    async with aiofiles.open("./.temp/CurrentObservations.i2m", 'a') as f:
+        await f.write(i2Doc)
+        await f.close()
 
 
-    f = open("./.temp/CurrentObservations.i2m", "a")
-    f.write(i2Doc)
-    f.close()
-
-def makeDataFile():
+async def makeDataFile():
     l.info("Writing a CurrentObservations record.")
     header = '<Data type="CurrentObservations">'
     footer = '</Data>'
