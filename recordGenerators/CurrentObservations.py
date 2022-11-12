@@ -78,7 +78,10 @@ async def makeDataFile():
     files = []
     commands = []
 
-    # This causes blocking but there's not really much we can do about it :(
+    """
+        TODO: This can be ran in a seperate thread using loop.run_in_executor() according to the python discord.
+        ! This should probably be implemented ASAP.
+    """
     with open("./.temp/CurrentObservations.i2m", 'rb') as f_in:
         with gzip.open("./.temp/CurrentObservations.gz", 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)

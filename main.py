@@ -38,28 +38,28 @@ l.info("Developed by mewtek32, Floppaa, Goldblaze, and needlenose")
 
 async def grabAlertsLoop():
     while True:
-        Alerts.makeRecord()
+        await Alerts.makeRecord()
         await asyncio.sleep(60)
 
 async def FiveMinUpdaters():
     while True:
-        CurrentObservations.makeDataFile()
+        await CurrentObservations.makeDataFile()
         l.debug("Sleeping for 5 minutes...")
         await asyncio.sleep(5 * 60)
 
 async def HourUpdaters():
     while True:
-        DailyForecast.makeDataFile()
-        HourlyForecast.makeDataFile()
-        AirQuality.writeData()
-        PollenForecast.makeDataFile()
-        AirportDelays.writeData()
-        Breathing.makeDataFile()
-        HeatingAndCooling.makeRecord()
-        WateringNeeds.makeRecord()
-        MosquitoActivity.makeRecord()
-        AchesAndPains.makeRecord()
-        TideForecast.makeRecord()
+        await DailyForecast.makeDataFile()
+        await HourlyForecast.makeDataFile()
+        # AirQuality.writeData()
+        # PollenForecast.makeDataFile()
+        # AirportDelays.writeData()
+        # Breathing.makeDataFile()
+        # HeatingAndCooling.makeRecord()
+        # WateringNeeds.makeRecord()
+        # MosquitoActivity.makeRecord()
+        # AchesAndPains.makeRecord()
+        # TideForecast.makeRecord()
         l.debug("Sleeping for an hour...")
         await asyncio.sleep(60 * 60)
 
