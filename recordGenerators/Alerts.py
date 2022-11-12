@@ -359,7 +359,7 @@ async def makeRecord():
         bit.sendFile(files, commands, 1, 0)
         os.remove(gZipFile)
         k = 0
-    
-    os.remove("./.temp/BERecord.xml")
-    os.remove("./.temp/BERecord.i2m")
+
+        os.remove("./.temp/BERecord.xml")
+        os.remove("./.temp/BERecord.i2m")
     
