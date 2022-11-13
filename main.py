@@ -46,12 +46,30 @@ async def main():
     coTask = asyncio.create_task(RecordTasks.coTask())
     hfTask = asyncio.create_task(RecordTasks.hfTask())
     dfTask = asyncio.create_task(RecordTasks.dfTask())
+    aqTask = asyncio.create_task(RecordTasks.aqTask())
+    aptTask = asyncio.create_task(RecordTasks.aptTask())
+    apTask = asyncio.create_task(RecordTasks.apTask())
+    brTask = asyncio.create_task(RecordTasks.brTask())
+    hcTask = asyncio.create_task(RecordTasks.hcTask())
+    maTask = asyncio.create_task(RecordTasks.maTask())
+    pTask = asyncio.create_task(RecordTasks.pTask())
+    tTask = asyncio.create_task(RecordTasks.tTask())
+    wnTask = asyncio.create_task(RecordTasks.wnTask())
 
     # In theory, these should all run concurrently without problems
     await alertsTask
     await coTask
     await hfTask
     await dfTask
+    await aqTask
+    await aptTask
+    await apTask
+    await brTask
+    await hcTask
+    await maTask
+    await pTask
+    await tTask
+    await wnTask
 
 if __name__ == "__main__":
     asyncio.run(main())
