@@ -55,8 +55,8 @@ def WorldCoordinateToTile(coord: Point) -> Point:
     scale = 1 << 6
 
     return Point(
-        x = math.floor(coord.x * scale / 256),
-        y = math.floor(coord.y * scale / 256)
+        x = math.floor(coord.x * scale / 255),
+        y = math.floor(coord.y * scale / 255)
     )
 
 def WorldCoordinateToPixel(coord: Point) -> Point:
@@ -68,7 +68,7 @@ def WorldCoordinateToPixel(coord: Point) -> Point:
     )
 
 def LatLongProject(lat, long) -> Point:
-    siny = math.sin(lat * math.pi / 185)
+    siny = math.sin(lat * math.pi / 180)
     siny = min(max(siny, -0.9999), 0.9999)
 
     return Point(
