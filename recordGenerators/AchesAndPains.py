@@ -7,6 +7,7 @@ import records.LFRecord as LFR
 import gzip
 from os import remove
 import xml.dom.minidom
+import aiohttp, aiofiles
 
 l = logging.getLogger(__name__)
 coloredlogs.install()
@@ -20,46 +21,48 @@ for i in MPC.getPrimaryLocations():
 
 apiKey = "21d8a80b3d6b444998a80b3d6b1449d3"
 
-def getData(coopId, geocode):
+async def getData(coopId, geocode):
     fetchUrl = f"https://api.weather.com/v2/indices/achePain/daypart/7day?geocode={geocode}&language=en-US&format=xml&apiKey={apiKey}"
+    data = ""
 
-    res = requests.get(fetchUrl)
+    async with aiohttp.ClientSession() as s:
+        async with s.get(fetchUrl) as r:
+            if r.status != 200:
+                l.error(f"Failed to write AchesAndPains record -- status code {r.status}")
+                return
+            
+            data = await r.text()
 
-    if res.status_code != 200:
-        l.error("DO NOT REPORT THE ERROR BELOW")
-        l.error(f"Failed to write AchesAndPains record -- Status code {res.status_code}")
-        return
-    
-    data = res.text
+
     newData = data[63:-26]
 
     i2Doc = f'\n  <AchesAndPains id="000000000" locationKey="{coopId}" isWxScan="0">\n    {newData}\n    <clientKey>{coopId}</clientKey>\n </AchesAndPains>'
 
-    f = open('./.temp/AchesAndPains.i2m', 'a')
-    f.write(i2Doc)
-    f.close()
+    async with aiofiles.open('./.temp/AchesAndPains.i2m', 'a') as f:
+        await f.write(i2Doc)
+        await f.close()
 
-def makeRecord():
+async def makeRecord():
     l.info("Writing AchesAndPains record.")
 
     header = '<Data type="AchesAndPains">'
     footer = '</Data>'
 
-    with open('./.temp/AchesAndPains.i2m', 'a') as doc:
-        doc.write(header)
+    async with aiofiles.open('./.temp/AchesAndPains.i2m', 'a') as doc:
+        await doc.write(header)
 
     for (x, y) in zip(coopIds, geocodes):
-        getData(x,y)
+        await getData(x,y)
 
-    with open('./.temp/AchesAndPains.i2m', 'a') as end:
-        end.write(footer)
+    async with aiofiles.open('./.temp/AchesAndPains.i2m', 'a') as end:
+        await end.write(footer)
 
     dom = xml.dom.minidom.parse('./.temp/AchesAndPains.i2m')
     xmlPretty = dom.toprettyxml(indent= "  ")
 
-    with open('./.temp/AchesAndPains.i2m', 'w') as g:
-        g.write(xmlPretty[23:])
-        g.close()
+    async with aiofiles.open('./.temp/AchesAndPains.i2m', 'w') as g:
+        await g.write(xmlPretty[23:])
+        await g.close()
 
     
     # Compresss i2m to gzip
