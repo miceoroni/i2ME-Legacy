@@ -4,6 +4,7 @@ import os
 import shutil
 import xml.dom.minidom
 import logging,coloredlogs
+import aiohttp, aiofiles
 
 import sys
 sys.path.append("./py2lib")
@@ -29,56 +30,56 @@ l.debug(airports)
 
 apiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
 
-def getData(airport):
+async def getData(airport):
     url = f"https://api.weather.com/v1/airportcode/{airport}/airport/delays.xml?language=en-US&apiKey={apiKey}"
+    data = ""
 
-    res = requests.get(url=url)
+    async with aiohttp.ClientSession() as s:
+        async with s.get(url) as r:
+            data = await r.text()
 
-    data = res.text
     newData = data[48:-11]
 
     # Write to i2doc file
     i2Doc = f'<AirportDelays id="000000000" locationKey="{airport}" isWxScan="0">' + '' + newData + f'<clientKey>{airport}</clientKey></AirportDelays>' 
 
-    f = open("./.temp/AirportDelays.i2m", 'a')
-    f.write(i2Doc)
-    f.close()
+    async with aiofiles.open("./.temp/AirportDelays.i2m", 'a') as f:
+        await f.write(i2Doc)
+        await f.close()
 
-def writeData():
+async def writeData():
     useData = False
     airportsWithDelays = []
 
     for x in airports:
-        # Do a quick check to see if the airport in question has a delay or not
-        res = requests.get(f"https://api.weather.com/v1/airportcode/{x}/airport/delays.xml?language=en-US&apiKey={apiKey}")
-
-        if (res.status_code != 200):
-            l.debug(f"[AIRPORT DELAYS] No delays for {x} found, skipping..")
-        else:
-            airportsWithDelays.append(x)
-            l.debug(f"[AIRPORT DELAYS] {x} has a delay! Writing a file..")
-            useData = True
+        async with aiohttp.ClientSession() as s:
+            async with s.get(f"https://api.weather.com/v1/airportcode/{x}/airport/delays.xml?language=en-US&apiKey={apiKey}") as r:
+                if r.status != 200:
+                    l.debug(f"No delay for {x} found, skipping..")
+                else:
+                    airportsWithDelays.append(x)
+                    useData = True
 
     if (useData):
         l.info("Writing an AirportDelays record.")
         header = '<Data type="AirportDelays">'
         footer = "</Data>"
 
-        with open("./.temp/AirportDelays.i2m", 'w') as doc:
-            doc.write(header)
+        async with aiofiles.open("./.temp/AirportDelays.i2m", 'w') as doc:
+            await doc.write(header)
 
         for x in airportsWithDelays:
-            getData(x)
+            await getData(x)
 
-        with open("./.temp/AirportDelays.i2m", 'a') as end:
-            end.write(footer)
+        async with aiofiles.open("./.temp/AirportDelays.i2m", 'a') as end:
+            await end.write(footer)
 
         dom = xml.dom.minidom.parse("./.temp/AirportDelays.i2m")
         prettyXml = dom.toprettyxml(indent="  ")
 
-        with open("./.temp/AirportDelays.i2m", 'w') as g:
-            g.write(prettyXml)
-            g.close()
+        async with aiofiles.open("./.temp/AirportDelays.i2m", 'w') as g:
+            await g.write(prettyXml)
+            await g.close()
 
         files = []
         commands = []
