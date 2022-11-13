@@ -38,7 +38,7 @@ async def getData(airport):
         async with s.get(url) as r:
             data = await r.text()
 
-    newData = data[48:-11]
+    newData = data[48:-11].replace('¿', '-')
 
     # Write to i2doc file
     i2Doc = f'<AirportDelays id="000000000" locationKey="{airport}" isWxScan="0">' + '' + newData + f'<clientKey>{airport}</clientKey></AirportDelays>' 
