@@ -1,4 +1,4 @@
-import asyncio
+import asyncio, aiofiles
 from asyncio.log import logger
 from asyncore import loop
 import logging,coloredlogs
@@ -12,31 +12,36 @@ coloredlogs.install(logger=l)
 
 useRadarServer = True
 
-# Create dirs and files
-if not os.path.exists('.temp/'):
-    os.makedirs('.temp/')
-
-if not os.path.exists('.temp/tiles/'):
-    os.makedirs('.temp/tiles/')
-
-if not os.path.exists('.temp/tiles/output/'):
-    os.makedirs('.temp/tiles/output/')
-
-if not os.path.exists('.temp/msgId.txt'):
-    print("Creating initial msgId file")
-    with open('.temp/msgId.txt', "w") as f:
-        f.write("410080515")
-
-
-"""
-CurrentConditions: Every 5 minutes
-Daily Forecasts, Hourlies, etc: 60 minutes
-Alerts: 5 minutes
-"""
 l.info("Starting i2RecordCollector")
 l.info("Developed by mewtek32, Floppaa, Goldblaze, and needlenose")
 
+async def createTemp():
+    """ Used on a first time run, creates necessary files & directories for the message encoder to work properly. """
+    if not (os.path.exists('./.temp/')):
+        l.info("Creating necessary directories & files..")
+        os.mkdir('./.temp')
+        
+        # Used for the record generator
+        os.mkdir('./.temp/tiles/')
+        os.mkdir('./.temp/tiles/output/')
+
+        # Used for radar server downloads
+        os.mkdir('./.temp/output')
+        os.mkdir('./.temp/output/radarmosaic')
+        os.mkdir('./.temp/output/satrad')
+
+        # Create msgId file for bit.py
+        async with aiofiles.open('./.temp/msgId.txt', 'w') as msgId:
+            await msgId.write('410080515')
+            await msgId.close()
+    else:
+        l.debug(".temp file exists")
+        return
+
+
 async def main():
+    await createTemp()
+
     alertsTask = asyncio.create_task(RecordTasks.alertsTask())
     coTask = asyncio.create_task(RecordTasks.coTask())
     hfTask = asyncio.create_task(RecordTasks.hfTask())
