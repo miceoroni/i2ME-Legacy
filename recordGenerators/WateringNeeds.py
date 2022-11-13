@@ -54,7 +54,7 @@ async def makeRecord():
         await getData(x,y)
 
     async with aiofiles.open('./.temp/WateringNeeds.i2m', 'a') as end:
-        end.write(footer)
+        await end.write(footer)
 
     dom = xml.dom.minidom.parse('./.temp/WateringNeeds.i2m')
     xmlPretty = dom.toprettyxml(indent= "  ")
