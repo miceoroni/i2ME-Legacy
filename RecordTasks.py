@@ -9,14 +9,14 @@ from recordGenerators import CurrentObservations,HourlyForecast,DailyForecast
 async def coTask():
     while True:
         await CurrentObservations.makeDataFile()
-        asyncio.sleep(5 * 60)
+        await asyncio.sleep(5 * 60)
 
 async def hfTask():
     while True:
         await HourlyForecast.makeDataFile()
-        asyncio.sleep(60 * 60)
+        await asyncio.sleep(60 * 60)
 
 async def dfTask():
     while True:
         await DailyForecast.makeDataFile()
-        asyncio.sleep(60 * 60)
+        await asyncio.sleep(60 * 60)
