@@ -5,7 +5,7 @@ import os
 import shutil
 import xml.dom.minidom
 import logging,coloredlogs
-import aiofiles, aiohttp
+import aiofiles, aiohttp, asyncio
 
 import sys
 sys.path.append("./py2lib")
@@ -48,7 +48,7 @@ async def getData(tecci, zipCode):
     #Write to .i2m file
     i2Doc = '<HourlyForecast id="000000000" locationKey="' + str(tecci) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(tecci) + '</clientKey></HourlyForecast>'
 
-    async with aiofiles.open('./.temp/HourlyForecast.i2m', 'w') as f:
+    async with aiofiles.open('./.temp/HourlyForecast.i2m', 'a') as f:
         await f.write(i2Doc)
         await f.close()
 
@@ -61,6 +61,7 @@ async def makeDataFile():
     async with aiofiles.open("./.temp/HourlyForecast.i2m", 'w') as doc:
         await doc.write(header)
 
+    
     for x, y in zip(tecciId, zipCodes):
         await getData(x, y)
         
