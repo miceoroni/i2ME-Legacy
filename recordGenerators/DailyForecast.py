@@ -63,7 +63,7 @@ async def makeDataFile():
     for x, y in zip(tecciId, zipCodes):
         await getData(x, y)
         
-    async with open("./.temp/DailyForecast.i2m", 'a') as end:
+    async with aiofiles.open("./.temp/DailyForecast.i2m", 'a') as end:
         await end.write(footer)
 
 
