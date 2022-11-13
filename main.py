@@ -42,6 +42,8 @@ async def createTemp():
 async def main():
     await createTemp()
 
+    mosaicTask = asyncio.create_task(RecordTasks.updateMosaicTask())
+    satradTask = asyncio.create_task(RecordTasks.updateSatradTask())
     alertsTask = asyncio.create_task(RecordTasks.alertsTask())
     coTask = asyncio.create_task(RecordTasks.coTask())
     hfTask = asyncio.create_task(RecordTasks.hfTask())
@@ -70,6 +72,10 @@ async def main():
     await pTask
     await tTask
     await wnTask
+
+    if useRadarServer:
+        await mosaicTask
+        await satradTask
 
 if __name__ == "__main__":
     asyncio.run(main())
