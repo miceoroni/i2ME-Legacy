@@ -1,10 +1,15 @@
 import asyncio
-from recordGenerators import CurrentObservations,HourlyForecast,DailyForecast
+from recordGenerators import Alerts,CurrentObservations,HourlyForecast,DailyForecast
 
 
 """ This houses the tasks needed to update the data records concurrently 
     I have no idea if this is a messy way to do things, but it will be worked upon if it is.
 """
+
+async def alertsTask():
+    while True:
+        await Alerts.makeRecord()
+        await asyncio.sleep(60)
 
 async def coTask():
     while True:

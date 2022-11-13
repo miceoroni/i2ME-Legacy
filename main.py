@@ -37,11 +37,13 @@ l.info("Starting i2RecordCollector")
 l.info("Developed by mewtek32, Floppaa, Goldblaze, and needlenose")
 
 async def main():
+    alertsTask = asyncio.create_task(RecordTasks.alertsTask())
     coTask = asyncio.create_task(RecordTasks.coTask())
     hfTask = asyncio.create_task(RecordTasks.hfTask())
     dfTask = asyncio.create_task(RecordTasks.dfTask())
 
     # In theory, these should all run concurrently without problems
+    await alertsTask
     await coTask
     await hfTask
     await dfTask
