@@ -94,7 +94,7 @@ async def writeData():
         comand = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__AirportDelays__,Feed=AirportDelays)" /><GzipCompressedMsg fname="AirportDelays" /></MSG>')
         numFiles = len(files)
 
-        await loop.run_in_executor(bit.sendFile(files, commands, numFiles, 0))
+        await loop.run_in_executor(None, bit.sendFile(files, commands, numFiles, 0))
 
         os.remove("./.temp/AirportDelays.i2m")
         os.remove("./.temp/AirportDelays.gz")
