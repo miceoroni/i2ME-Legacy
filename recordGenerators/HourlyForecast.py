@@ -5,6 +5,7 @@ import os
 import shutil
 import xml.dom.minidom
 import logging,coloredlogs
+import aiohttp, aiofiles, asyncio, asyncio
 
 import sys
 sys.path.append("./py2lib")
@@ -32,46 +33,49 @@ for i in MPC.getMetroCities():
 
 apiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
 
-def getData(tecci, zipCode):
+async def getData(tecci, zipCode):
+    l.debug('Gathering data for location id ' + tecci)
     fetchUrl = 'https://api.weather.com/v1/location/' + zipCode + ':4:US/forecast/hourly/360hour.xml?language=en-US&units=e&apiKey=' + apiKey
+    data = ""
 
     #Fetch data
-
-    response = requests.get(fetchUrl) 
-
-    data = response.text
+    async with aiohttp.ClientSession() as s:
+        async with s.get(fetchUrl) as r:
+            data = await r.text()
 
     newData = data[48:-11]
     
-    l.debug('Gathering data for location id ' + tecci)
     #Write to .i2m file
     i2Doc = '<HourlyForecast id="000000000" locationKey="' + str(tecci) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(tecci) + '</clientKey></HourlyForecast>'
 
-    f = open("./.temp/HourlyForecast.i2m", "a")
-    f.write(i2Doc)
-    f.close()
+    async with aiofiles.open('./.temp/HourlyForecast.i2m', 'a') as f:
+        await f.write(i2Doc)
+        await f.close()
 
-def makeDataFile():
+
+async def makeDataFile():
+    loop = asyncio.get_running_loop()
     l.info("Writing an HourlyForecast record.")
     header = '<Data type="HourlyForecast">'
     footer = '</Data>'
 
-    with open("./.temp/HourlyForecast.i2m", 'w') as doc:
-        doc.write(header)
+    async with aiofiles.open("./.temp/HourlyForecast.i2m", 'w') as doc:
+        await doc.write(header)
 
+    
     for x, y in zip(tecciId, zipCodes):
-        getData(x, y)
+        await getData(x, y)
         
-    with open("./.temp/HourlyForecast.i2m", 'a') as end:
-        end.write(footer)
+    async with aiofiles.open("./.temp/HourlyForecast.i2m", 'a') as end:
+        await end.write(footer)
 
 
     dom = xml.dom.minidom.parse("./.temp/HourlyForecast.i2m")
     pretty_xml_as_string = dom.toprettyxml(indent = "  ")
 
-    with open("./.temp/HourlyForecast.i2m", "w") as g:
-        g.write(pretty_xml_as_string[23:])
-        g.close()
+    async with aiofiles.open("./.temp/HourlyForecast.i2m", "w") as g:
+        await g.write(pretty_xml_as_string[23:])
+        await g.close()
 
     files = []
     commands = []

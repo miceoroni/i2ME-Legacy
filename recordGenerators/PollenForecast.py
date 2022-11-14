@@ -6,6 +6,7 @@ import os
 import shutil
 import xml.dom.minidom
 import logging, coloredlogs
+import aiohttp, aiofiles, asyncio
 
 sys.path.append("./py2lib")
 sys.path.append("./Util")
@@ -31,14 +32,13 @@ l.debug(pollenIds, geocodes)
 
 apiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
 
-def getData(pollenId, geocode):
+async def getData(pollenId, geocode):
     fetchUrl = f"https://api.weather.com/v2/indices/pollen/daypart/7day?geocode={geocode}&language=en-US&format=xml&apiKey={apiKey}"
-
+    data = ""
     #Fetch data
-
-    response = requests.get(fetchUrl) 
-
-    data = response.text
+    async with aiohttp.ClientSession() as s:
+        async with s.get(fetchUrl) as r:
+            data = await r.text()
 
     newData = data[63:-26]
     
@@ -46,32 +46,33 @@ def getData(pollenId, geocode):
     #Write to .i2m file
     i2Doc = '<PollenForecast id="000000000" locationKey="' + str(pollenId) + '" isWxscan="0">' + '' + newData + '<clientKey>' + str(pollenId) + '</clientKey></PollenForecast>'
 
-    f = open("./.temp/PollenForecast.i2m", "a")
-    f.write(i2Doc)
-    f.close()
+    async with aiofiles.open("./.temp/PollenForecast.i2m", "a") as f:
+        await f.write(i2Doc)
+        await f.close()
 
 
-def makeDataFile():
+async def makeDataFile():
+    loop = asyncio.get_running_loop()
     l.info("Writing a PollenForecast record.")
     header = '<Data type="PollenForecast">'
     footer = '</Data>'
 
-    with open("./.temp/PollenForecast.i2m", 'w') as doc:
-        doc.write(header)
+    async with aiofiles.open("./.temp/PollenForecast.i2m", 'w') as doc:
+        await doc.write(header)
 
     for x, y in zip(pollenIds, geocodes):
-        getData(x, y)
+        await getData(x, y)
         
-    with open("./.temp/PollenForecast.i2m", 'a') as end:
-        end.write(footer)
+    async with aiofiles.open("./.temp/PollenForecast.i2m", 'a') as end:
+        await end.write(footer)
 
 
     dom = xml.dom.minidom.parse("./.temp/PollenForecast.i2m")
     pretty_xml_as_string = dom.toprettyxml(indent = "  ")
 
-    with open("./.temp/PollenForecast.i2m", "w") as g:
-        g.write(pretty_xml_as_string[23:])
-        g.close()
+    async with aiofiles.open("./.temp/PollenForecast.i2m", "w") as g:
+        await g.write(pretty_xml_as_string[23:])
+        await g.close()
 
     files = []
     commands = []

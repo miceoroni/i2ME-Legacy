@@ -88,6 +88,7 @@ def getTime(timestamp) -> str:
     return str(time)
 
 async def collect(radarType: str):
+    loop = asyncio.get_running_loop()
     ts = await getValidTimestamps(radarType)
     frames = await downloadRadarFrames(radarType, ts)
 

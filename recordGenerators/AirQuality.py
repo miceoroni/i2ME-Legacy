@@ -4,6 +4,7 @@ import os
 import shutil
 import xml.dom.minidom
 import logging,coloredlogs
+import aiohttp, aiofiles, asyncio
 
 l = logging.getLogger(__name__)
 coloredlogs.install()
@@ -27,22 +28,25 @@ for i in MPC.getPrimaryLocations():
 
 apiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
 
-def getData(epaId, zipcode):
+async def getData(epaId, zipcode):
     url = f"https://api.weather.com/v1/location/{zipcode}:4:US/airquality.xml?language=en-US&apiKey={apiKey}"
+    data = ""
 
-    res = requests.get(url=url)
-
-    data = res.text
+    async with aiohttp.ClientSession() as s:
+        async with s.get(url) as r:
+            data = await r.text()
+    
     newData = data[57:-11]
 
     # Write to i2doc file
     i2Doc = f'<AirQuality id="000000000" locationKey="{epaId}" isWxScan="0">' + '' + newData + f'<clientKey>{epaId}</clientKey></AirQuality>' 
 
-    f = open("./.temp/AirQuality.i2m", 'a')
-    f.write(i2Doc)
-    f.close()
+    async with aiofiles.open("./.temp/AirQuality.i2m", 'a') as f:
+        await f.write(i2Doc)
+        await f.close()
 
-def writeData():
+async def writeData():
+    loop = asyncio.get_running_loop()
     useData = False 
     workingEpaIds = []
 
@@ -62,21 +66,21 @@ def writeData():
             header = '<Data type="AirQuality">'
             footer = "</Data>"
 
-            with open("./.temp/AirQuality.i2m", 'w') as doc:
-                doc.write(header)
+            async with aiofiles.open("./.temp/AirQuality.i2m", 'w') as doc:
+                await doc.write(header)
 
             for (x, y) in zip(workingEpaIds, zipCodes):
-                getData(x, y)
+                await getData(x, y)
 
-            with open("./.temp/AirQuality.i2m", 'a') as end:
-                end.write(footer)
+            async with aiofiles.open("./.temp/AirQuality.i2m", 'a') as end:
+                await end.write(footer)
 
             dom = xml.dom.minidom.parse("./.temp/AirQuality.i2m")
             xmlPretty = dom.toprettyxml(indent = "  ")
 
-            with open("./.temp/AirQuality.i2m", 'w') as g:
-                g.write(xmlPretty[23:])
-                g.close()
+            async with aiofiles.open("./.temp/AirQuality.i2m", 'w') as g:
+                await g.write(xmlPretty[23:])
+                await g.close()
 
             files = []
             commands = []

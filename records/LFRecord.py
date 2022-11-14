@@ -38,7 +38,3 @@ def getLatLong(locId: str):
 
 def getLocationInfo(locId: str):
     pass
-
-print(getCoopId('USAZ0278'))
-print(getZip('USAZ0278'))
-print(getLatLong('USAZ0278'))

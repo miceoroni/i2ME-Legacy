@@ -1,93 +1,81 @@
-import asyncio
+import asyncio, aiofiles
 from asyncio.log import logger
 from asyncore import loop
 import logging,coloredlogs
-from recordGenerators import Alerts,CurrentObservations,DailyForecast,HourlyForecast,AirportDelays,AirQuality,HeatingAndCooling,PollenForecast,Breathing, AchesAndPains, MosquitoActivity, WateringNeeds, TideForecast
 from radar import TWCRadarCollector
 import os
 from datetime import datetime
+import RecordTasks
 
 l = logging.getLogger(__name__)
 coloredlogs.install(logger=l)
 
 useRadarServer = True
 
-# Create dirs and files
-if not os.path.exists('.temp/'):
-    os.makedirs('.temp/')
-
-if not os.path.exists('.temp/tiles/'):
-    os.makedirs('.temp/tiles/')
-
-if not os.path.exists('.temp/tiles/output/'):
-    os.makedirs('.temp/tiles/output/')
-
-if not os.path.exists('.temp/msgId.txt'):
-    print("Creating initial msgId file")
-    with open('.temp/msgId.txt', "w") as f:
-        f.write("410080515")
-
-
-"""
-CurrentConditions: Every 5 minutes
-Daily Forecasts, Hourlies, etc: 60 minutes
-Alerts: 5 minutes
-"""
 l.info("Starting i2RecordCollector")
 l.info("Developed by mewtek32, Floppaa, Goldblaze, and needlenose")
 
-async def grabAlertsLoop():
-    while True:
-        Alerts.makeRecord()
-        await asyncio.sleep(60)
-
-async def FiveMinUpdaters():
-    while True:
-        CurrentObservations.makeDataFile()
-        l.debug("Sleeping for 5 minutes...")
-        await asyncio.sleep(5 * 60)
-
-async def HourUpdaters():
-    while True:
-        DailyForecast.makeDataFile()
-        HourlyForecast.makeDataFile()
-        AirQuality.writeData()
-        PollenForecast.makeDataFile()
-        AirportDelays.writeData()
-        Breathing.makeDataFile()
-        HeatingAndCooling.makeRecord()
-        WateringNeeds.makeRecord()
-        MosquitoActivity.makeRecord()
-        AchesAndPains.makeRecord()
-        TideForecast.makeRecord()
-        l.debug("Sleeping for an hour...")
-        await asyncio.sleep(60 * 60)
-
-async def radarCollector():
-    mosaicUpdateIntervals = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
-    satradUpdateIntervals = [0, 10, 20, 30, 40, 50]
-
-    while True:
-        # Server takes ~15 - 35 seconds on average to fully generate a frame, use 40 seconds
-        # to make sure the radar frame is fully good to go
-        if datetime.now().minute in mosaicUpdateIntervals and datetime.now().second == 40:
-            await TWCRadarCollector.collect("radarmosaic")
-
-        if datetime.now().minute in satradUpdateIntervals and datetime.now().second == 45:
-            await TWCRadarCollector.collect("satrad")
+async def createTemp():
+    """ Used on a first time run, creates necessary files & directories for the message encoder to work properly. """
+    if not (os.path.exists('./.temp/')):
+        l.info("Creating necessary directories & files..")
+        os.mkdir('./.temp')
         
-        await asyncio.sleep(1)
+        # Used for the record generator
+        os.mkdir('./.temp/tiles/')
+        os.mkdir('./.temp/tiles/output/')
 
-loop = asyncio.get_event_loop()
-alertTask = loop.create_task(grabAlertsLoop())
-CCtask = loop.create_task(FiveMinUpdaters())
-ForecastsTask = loop.create_task(HourUpdaters())
+        # Used for radar server downloads
+        os.mkdir('./.temp/output')
+        os.mkdir('./.temp/output/radarmosaic')
+        os.mkdir('./.temp/output/satrad')
 
-if useRadarServer: radarTask = loop.create_task(radarCollector())
+        # Create msgId file for bit.py
+        async with aiofiles.open('./.temp/msgId.txt', 'w') as msgId:
+            await msgId.write('410080515')
+            await msgId.close()
+    else:
+        l.debug(".temp file exists")
+        return
 
-try:
-    loop.run_until_complete(alertTask)
-    loop.run_until_complete(CCtask)
-    loop.run_until_complete(ForecastsTask)
-    if useRadarServer: loop.run_until_complete(radarTask)
-except asyncio.CancelledError: pass
+
+async def main():
+    await createTemp()
+
+    mosaicTask = asyncio.create_task(RecordTasks.updateMosaicTask())
+    satradTask = asyncio.create_task(RecordTasks.updateSatradTask())
+    alertsTask = asyncio.create_task(RecordTasks.alertsTask())
+    coTask = asyncio.create_task(RecordTasks.coTask())
+    hfTask = asyncio.create_task(RecordTasks.hfTask())
+    dfTask = asyncio.create_task(RecordTasks.dfTask())
+    aqTask = asyncio.create_task(RecordTasks.aqTask())
+    aptTask = asyncio.create_task(RecordTasks.aptTask())
+    apTask = asyncio.create_task(RecordTasks.apTask())
+    brTask = asyncio.create_task(RecordTasks.brTask())
+    hcTask = asyncio.create_task(RecordTasks.hcTask())
+    maTask = asyncio.create_task(RecordTasks.maTask())
+    pTask = asyncio.create_task(RecordTasks.pTask())
+    tTask = asyncio.create_task(RecordTasks.tTask())
+    wnTask = asyncio.create_task(RecordTasks.wnTask())
+
+    # In theory, these should all run concurrently without problems
+    await alertsTask
+    await coTask
+    await hfTask
+    await dfTask
+    await aqTask
+    await aptTask
+    await apTask
+    await brTask
+    await hcTask
+    await maTask
+    await pTask
+    await tTask
+    await wnTask
+
+    if useRadarServer:
+        await mosaicTask
+        await satradTask
+
+if __name__ == "__main__":
+    asyncio.run(main())
