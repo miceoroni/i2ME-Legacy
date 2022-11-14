@@ -4,7 +4,7 @@ import os
 import shutil
 import xml.dom.minidom
 import logging,coloredlogs
-import aiohttp, aiofiles
+import aiohttp, aiofiles, asyncio
 
 l = logging.getLogger(__name__)
 coloredlogs.install()
@@ -46,6 +46,7 @@ async def getData(epaId, zipcode):
         await f.close()
 
 async def writeData():
+    loop = asyncio.get_running_loop()
     useData = False 
     workingEpaIds = []
 
@@ -93,7 +94,7 @@ async def writeData():
             comand = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__AirQuality__,Feed=AirQuality)" /><GzipCompressedMsg fname="AirQuality" /></MSG>')
             numFiles = len(files)
 
-            bit.sendFile(files, commands, numFiles, 0)
+            await loop.run_in_executor(bit.sendFile(files, commands, numFiles, 0))
 
             os.remove("./.temp/AirQuality.i2m")
             os.remove("./.temp/AirQuality.gz")

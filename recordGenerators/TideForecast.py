@@ -7,7 +7,7 @@ import records.LFRecord as LFR
 import gzip
 from os import remove
 import xml.dom.minidom
-import aiohttp, aiofiles
+import aiohttp, aiofiles, asyncio
 
 l = logging.getLogger(__name__)
 coloredlogs.install()
@@ -48,6 +48,7 @@ async def getData(tideStation, geocode):
         await f.close()
 
 async def makeRecord():
+    loop = asyncio.get_running_loop()
     if len(tideStations) < 1:
         l.debug("Skipping TidesForecast -- No locations.")
         return
@@ -82,7 +83,7 @@ async def makeRecord():
     file = "./.temp/TidesForecast.gz"
     command = '<MSG><Exec workRequest="storeData(File={0},QGROUP=__TidesForecast__,Feed=TidesForecast)" /><GzipCompressedMsg fname="TidesForecast" /></MSG>'
 
-    bit.sendFile([file], [command], 1, 0)
+    await loop.run_in_executor(bit.sendFile([file], [command], 1, 0))
 
     remove('./.temp/TidesForecast.i2m')
     remove('./.temp/TidesForecast.gz')

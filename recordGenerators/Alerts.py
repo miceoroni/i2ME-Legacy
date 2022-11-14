@@ -9,7 +9,7 @@ import xml.dom.minidom
 import shutil
 import gzip
 import logging,coloredlogs
-import aiofiles, aiohttp
+import aiohttp, aiofiles, asyncio
 
 
 import sys
@@ -324,6 +324,7 @@ async def getAlerts(location):
 
 
 async def makeRecord():
+    loop = asyncio.get_running_loop()
     global k
     
     # The BERecord XML doesn't need to be written if there's no alerts.

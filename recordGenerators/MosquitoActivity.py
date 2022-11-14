@@ -7,7 +7,7 @@ import records.LFRecord as LFR
 import gzip
 from os import remove
 import xml.dom.minidom
-import aiohttp, aiofiles
+import aiohttp, aiofiles, asyncio
 
 l = logging.getLogger(__name__)
 coloredlogs.install()
@@ -43,6 +43,7 @@ async def getData(coopId, geocode):
         await f.close()
 
 async def makeRecord():
+    loop = asyncio.get_running_loop()
     l.info("Writing MosquitoActivity record.")
 
     header = '<Data type="MosquitoActivity">'
@@ -73,7 +74,7 @@ async def makeRecord():
     file = "./.temp/MosquitoActivity.gz"
     command = '<MSG><Exec workRequest="storeData(File={0},QGROUP=__MosquitoActivity__,Feed=MosquitoActivity)" /><GzipCompressedMsg fname="MosquitoActivity" /></MSG>'
 
-    bit.sendFile([file], [command], 1, 0)
+    await loop.run_in_executor(bit.sendFile([file], [command], 1, 0))
 
     remove('./.temp/MosquitoActivity.i2m')
     remove('./.temp/MosquitoActivity.gz')

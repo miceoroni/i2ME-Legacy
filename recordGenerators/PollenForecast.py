@@ -6,7 +6,7 @@ import os
 import shutil
 import xml.dom.minidom
 import logging, coloredlogs
-import aiohttp, aiofiles
+import aiohttp, aiofiles, asyncio
 
 sys.path.append("./py2lib")
 sys.path.append("./Util")
@@ -52,6 +52,7 @@ async def getData(pollenId, geocode):
 
 
 async def makeDataFile():
+    loop = asyncio.get_running_loop()
     l.info("Writing a PollenForecast record.")
     header = '<Data type="PollenForecast">'
     footer = '</Data>'
@@ -85,7 +86,7 @@ async def makeDataFile():
     command = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__PollenForecast__,Feed=PollenForecast)" /><GzipCompressedMsg fname="PollenForecast" /></MSG>')
     numFiles = len(files)
 
-    bit.sendFile(files, commands, numFiles, 0)
+    await loop.run_in_executor(bit.sendFile(files, commands, numFiles, 0))
 
     os.remove("./.temp/PollenForecast.i2m")
     os.remove("./.temp/PollenForecast.gz")

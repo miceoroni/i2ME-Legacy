@@ -4,7 +4,7 @@ import os
 import shutil
 import xml.dom.minidom
 import logging,coloredlogs
-import aiohttp, aiofiles
+import aiohttp, aiofiles, asyncio
 
 import sys
 sys.path.append("./py2lib")
@@ -48,6 +48,7 @@ async def getData(airport):
         await f.close()
 
 async def writeData():
+    loop = asyncio.get_running_loop()
     useData = False
     airportsWithDelays = []
 
@@ -93,7 +94,7 @@ async def writeData():
         comand = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__AirportDelays__,Feed=AirportDelays)" /><GzipCompressedMsg fname="AirportDelays" /></MSG>')
         numFiles = len(files)
 
-        bit.sendFile(files, commands, numFiles, 0)
+        await loop.run_in_executor(bit.sendFile(files, commands, numFiles, 0))
 
         os.remove("./.temp/AirportDelays.i2m")
         os.remove("./.temp/AirportDelays.gz")

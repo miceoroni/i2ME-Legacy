@@ -6,8 +6,7 @@ import os
 import shutil
 import xml.dom.minidom
 import logging,coloredlogs
-import aiofiles
-import aiohttp
+import aiohttp, aiofiles, asyncio
 
 import sys
 sys.path.append("./py2lib")
@@ -55,6 +54,7 @@ async def getData(tecci, zipCode):
 
 
 async def makeDataFile():
+    loop = asyncio.get_running_loop()
     l.info("Writing a CurrentObservations record.")
     header = '<Data type="CurrentObservations">'
     footer = '</Data>'
@@ -92,7 +92,7 @@ async def makeDataFile():
     command = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__CurrentObservations__,Feed=CurrentObservations)" /><GzipCompressedMsg fname="CurrentObservations" /></MSG>')
     numFiles = len(files)
 
-    bit.sendFile(files, commands, numFiles, 0)
+    await loop.run_in_executor(await loop.run_in_executor(bit.sendFile(files, commands, numFiles, 0)))
 
     os.remove("./.temp/CurrentObservations.i2m")
     os.remove("./.temp/CurrentObservations.gz")

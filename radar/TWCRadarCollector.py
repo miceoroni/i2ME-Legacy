@@ -88,6 +88,7 @@ def getTime(timestamp) -> str:
     return str(time)
 
 async def collect(radarType: str):
+    loop = asyncio.get_running_loop()
     ts = await getValidTimestamps(radarType)
     frames = await downloadRadarFrames(radarType, ts)
 
@@ -99,4 +100,4 @@ async def collect(radarType: str):
         if radarType == "satrad":
             commands.append( '<MSG><Exec workRequest="storePriorityImage(FileExtension=.tiff,File={0},Location=US,ImageType=SatRad,IssueTime=' + getTime(ts[i]) + ')"/></MSG>' )
 
-        bit.sendFile([frames[i]], [commands[i]], 1, 0)
+        await loop.run_in_executor(bit.sendFile([frames[i]], [commands[i]], 1, 0))
