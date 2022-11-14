@@ -73,7 +73,7 @@ async def makeRecord():
     file = "./.temp/WateringNeeds.gz"
     command = '<MSG><Exec workRequest="storeData(File={0},QGROUP=__WateringNeeds__,Feed=WateringNeeds)" /><GzipCompressedMsg fname="WateringNeeds" /></MSG>'
 
-    await loop.run_in_executor(None, bit.sendFile([file], [command], 1, 0))
+    bit.sendFile([file], [command], 1, 0)
 
     remove('./.temp/WateringNeeds.i2m')
     remove('./.temp/WateringNeeds.gz')

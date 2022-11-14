@@ -86,7 +86,7 @@ async def makeDataFile():
     command = commands.append('<MSG><Exec workRequest="storeData(File={0},QGROUP=__Breathing__,Feed=Breathing)" /><GzipCompressedMsg fname="Breathing" /></MSG>')
     numFiles = len(files)
 
-    await loop.run_in_executor(None, bit.sendFile(files, commands, numFiles, 0))
+    bit.sendFile(files, commands, numFiles, 0)
 
     os.remove("./.temp/Breathing.i2m")
     os.remove("./.temp/Breathing.gz")

@@ -100,4 +100,4 @@ async def collect(radarType: str):
         if radarType == "satrad":
             commands.append( '<MSG><Exec workRequest="storePriorityImage(FileExtension=.tiff,File={0},Location=US,ImageType=SatRad,IssueTime=' + getTime(ts[i]) + ')"/></MSG>' )
 
-        await loop.run_in_executor(bit.sendFile([frames[i]], [commands[i]], 1, 0))
+        bit.sendFile([frames[i]], [commands[i]], 1, 0)
