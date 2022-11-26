@@ -4,28 +4,22 @@ from radar import TWCRadarCollector
 from datetime import datetime
 
 
-""" This houses the tasks needed to update the data records concurrently 
-    I have no idea if this is a messy way to do things, but it will be worked upon if it is.
-"""
-
 async def updateMosaicTask():
-    mosaicUpdateIntervals = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    mosaicUpdateIntervals = [i+1 for i in range(0, 60, 5)]
 
     while True:
-        # Server takes ~15 - 35 seconds to fully generate a frame, so use 40 seconds to ensure it's fully generated.
-        if datetime.now().minute in mosaicUpdateIntervals and datetime.now().second == 40:
+        # Mosaic intervals are 5+1 minutes, so instead of waiting 40 seconds and running "Datetime.now()" twice, We run it once and wait for 60.
+        if datetime.now().minute in mosaicUpdateIntervals:
             await TWCRadarCollector.collect("radarmosaic")
-
         await asyncio.sleep(1)
 
 async def updateSatradTask():
-    satradUpdateIntervals = [0, 10, 20, 30, 40, 50]
+    satradUpdateIntervals = [i+1 for i in range(0, 60, 10)]
 
     while True:
-        # Server takes ~15 - 35 seconds to fully generate a frame, so use 40 seconds to ensure it's fully generated.
-        if datetime.now().minute in satradUpdateIntervals and datetime.now().second == 40:
+        #Satrad intervals are 10+1 minutes, so instead of waiting 40 seconds and running "Datetime.now()" twice, We run it once and wait for 60.
+        if datetime.now().minute in satradUpdateIntervals:
             await TWCRadarCollector.collect("satrad")
-
         await asyncio.sleep(1)
 
 
