@@ -20,9 +20,9 @@ This software handles data collection and processing for The Weather Channel's I
 - [ ] WMRecord - Marine Forecast
 
 # Usage instructions
-[Download a release](https://github.com/the5dcrew/i2MessageEncoder-Rewrite/releases) for the most stable version, or clone the repository.
+[Download a release](https://github.com/Open-Telecom/i2MessageEncoder-Rewrite/releases) for the most stable version, or clone the repository.
 
-``git clone https://github.com/the5dcrew/i2MessageEncoder-Rewrite``
+``git clone https://github.com/Open-Telecom/i2MessageEncoder-Rewrite``
 
 *(If downloading this as a zip, extract to the directory of your choosing.)*
 
