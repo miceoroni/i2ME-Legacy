@@ -23,8 +23,8 @@
 - [X] Pollen Forecasts
 - [X] Tide Station Forecasts
 - [X] Watering Needs
-- [] Marine Forecasts
-- [] Traffic Forecasts **(API access missing)**
+- [ ] Marine Forecasts
+- [ ] Traffic Forecasts **(API access missing)**
 
 # Usage instructions
 1) Ensure that [Python 3.8 is installed](https://www.python.org/downloads/release/python-380/).
