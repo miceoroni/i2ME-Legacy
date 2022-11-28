@@ -3,7 +3,6 @@
 </p> 
 
 <h1 align="center"><strong>IntelliStar 2 Data Collector</strong></h1>
-<style>img {width: 80%}</style>
 
 
 # Requirements
