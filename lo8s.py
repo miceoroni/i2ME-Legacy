@@ -4,10 +4,10 @@ from datetime import datetime, timedelta
 from  random import choice
 
 def runLo8s(flavor, duration, LDL, logo = None, LDLColor = None, EmergencyLFCancel = None):
-    Id = ''.join(random.choice('ABCDEF0123456789') for i in range(16))
+    Id = ''.join(choice('ABCDEF0123456789') for i in range(16))
     nowUTC = datetime.utcnow()
     now = datetime.now()
-    friendlyRunTime = now + timedelta(seconds=30).strftime('%m/%d/%Y %I:%M:%S %p')
+    friendlyLo8sRunTime = (now + timedelta(seconds=30)).strftime('%m/%d/%Y %I:%M:%S %p')
     runTime = nowUTC + timedelta(seconds=30)
     ldlCancelTime = runTime.strftime('%m/%d/%Y %H:%M:%S:02')
     lo8sRunTime = runTime.strftime('%m/%d/%Y %H:%M:%S:00')
@@ -52,17 +52,17 @@ def runLo8s(flavor, duration, LDL, logo = None, LDLColor = None, EmergencyLFCanc
     if EmergencyLFCancel == 1:
         print("\nGetting The LDL Ready So It'll Cue After The National DBS Local Forecast")
         bit.sendCommand([f'<MSG><Exec workRequest="loadPres(File={0},Flavor=domestic/ldl{LDLColor},Duration=72000,PresentationId=LDL1)" /></MSG>'], 1)
-        time.sleep(10)
+        sleep(10)
         print("\nSending The Run Command For The LDL...")
         bit.sendCommand([f'<MSG><Exec workRequest="runPres(File={0},PresentationId=LDL1,StartTime={nextLDLRun})" /></MSG>'], 1)
     elif LDL == 1:
         print("\nGetting The LDL Ready So It'll Cue After This Local Forecast...")
         bit.sendCommand([f'<MSG><Exec workRequest="loadPres(File={0},Flavor=domestic/ldl{LDLColor},PresentationId=LDL1)" /></MSG>'], 1)
-        time.sleep(10)
+        sleep(10)
         print('\nSending The Run Command For The LDL. As Dave Schwartz Would Say... "That\'s a Wrap!"')
         bit.sendCommand([f'<MSG><Exec workRequest="runPres(File={0},PresentationId=LDL1,StartTime={nextLDLRun})" /></MSG>'], 1)
     else:
-        time.sleep(10)
+        sleep(10)
         print('That\'s It Folks. As Dave Schwartz Would Say... "That\'s a Wrap!"')
 
 #----- SET BACKGROUNDS HERE ----------------------#
@@ -75,20 +75,20 @@ BGNorm = ['3091', '3092', '3102', '3114']
 #------ BG RULES SECTION ------------------------#
 
 if BGCatastrophic:
-    brandedCatastrophic = random.choice(BGCatastrophic)
+    brandedCatastrophic = choice(BGCatastrophic)
 else:
     brandedCatastrophic = ''
 if BGStorm:
-    brandedStorm = random.choice(BGStorm)
+    brandedStorm = choice(BGStorm)
 else:
     brandedStorm = ''
 if BGAlert:
-    brandedAlert = random.choice(BGAlert)
+    brandedAlert = choice(BGAlert)
 else:
     brandedAlert = ''
 
 if BGNorm:
-    brandedNormal = random.choice(BGNorm)
+    brandedNormal = choice(BGNorm)
 else:
     brandedNormal = ''
 #----------------------------------------------
@@ -117,4 +117,4 @@ while True:
         exit()
     else:
         print("Not a valid selection.\n\n")
-        time.sleep(1)
+        sleep(1)
