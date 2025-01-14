@@ -37,9 +37,3 @@
 ### Attributions & Disclaimers
 Air Quality reports are powered by Copernicus Atmosphere Monitoring Service Information 2022.
 Neither the European Commission nor ECMWF is responsible for any use that may be made of the Copernicus Information or Data it contains.
-
-### Copyright Notice
-
-Copyright © 2022 OpenTelecom
-
-The i2DataCollector project cannot be copied/distributed without the express permission of the OpenTelecom group.
