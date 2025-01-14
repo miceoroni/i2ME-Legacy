@@ -1,5 +1,9 @@
 <h1 align="center"><strong>IntelliStar 2 Data Collector</strong></h1>
 
+# NOTICE FOR THIS REPOSITORY
+This is an unmaintained version of the legacy IntelliStar 2 Data Collector developed when I was originally working with the OpenTelecom group. All git commit history has remained intact, and this software is free to use and modify so long as a closed-source version is not distributed, per the GNU Public License. 
+
+Enjoy!
 
 # Requirements
 * Properly set up interface for UDP.
