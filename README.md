@@ -1,7 +1,3 @@
-<p align="center">
-    <img src="https://cdn.discordapp.com/attachments/1035585006724194311/1046646391730077736/opentelecom2k_blue_clean.png">
-</p> 
-
 <h1 align="center"><strong>IntelliStar 2 Data Collector</strong></h1>
 
 
