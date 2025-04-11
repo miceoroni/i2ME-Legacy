@@ -28,7 +28,7 @@ for i in MPC.getPrimaryLocations():
 airports = MPC.getAirportCodes()
 l.debug(airports)
 
-apiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
+apiKey = 'e1f10a1e78da46f5b10a1e78da96f525'
 
 async def getData(airport):
     url = f"https://api.weather.com/v1/airportcode/{airport}/airport/delays.xml?language=en-US&apiKey={apiKey}"
