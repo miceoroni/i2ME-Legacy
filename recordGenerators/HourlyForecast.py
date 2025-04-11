@@ -31,7 +31,7 @@ for i in MPC.getMetroCities():
     zipCodes.append(LFR.getZip(i))
 
 
-apiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
+apiKey = 'e1f10a1e78da46f5b10a1e78da96f525'
 
 async def getData(tecci, zipCode):
     l.debug('Gathering data for location id ' + tecci)
