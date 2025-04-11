@@ -23,8 +23,8 @@ coloredlogs.install()
 alertLocations = getAlertZones()
 
 #You can safely edit the API key here. Make sure to include the ' before and after the key
-headlineApiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
-detailsApiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
+headlineApiKey = 'e1f10a1e78da46f5b10a1e78da96f525'
+detailsApiKey = 'e1f10a1e78da46f5b10a1e78da96f525'
 
 k = 0
 async def getAlerts(location):
