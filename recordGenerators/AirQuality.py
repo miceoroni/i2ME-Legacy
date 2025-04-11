@@ -26,7 +26,7 @@ for i in MPC.getPrimaryLocations():
     zipCodes.append(LFR.getZip(i))
     epaIds.append(LFR.getEpaId(i))
 
-apiKey = '21d8a80b3d6b444998a80b3d6b1449d3'
+apiKey = 'e1f10a1e78da46f5b10a1e78da96f525'
 
 async def getData(epaId, zipcode):
     url = f"https://api.weather.com/v1/location/{zipcode}:4:US/airquality.xml?language=en-US&apiKey={apiKey}"
