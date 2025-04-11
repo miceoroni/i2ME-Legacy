@@ -19,7 +19,7 @@ async def getValidTimestamps(boundaries:ImageBoundaries) -> list:
     times = []
 
     async with aiohttp.ClientSession() as session:
-        url = "https://api.weather.com/v3/TileServer/series/productSet?apiKey=21d8a80b3d6b444998a80b3d6b1449d3&filter=twcRadarMosaic"
+        url = "https://api.weather.com/v3/TileServer/series/productSet?apiKey=e1f10a1e78da46f5b10a1e78da96f525&filter=twcRadarMosaic"
         async with session.get(url) as r:
             response = await r.json()
 
